@@ -69,6 +69,14 @@ Once you are woken up by the background task completion message:
        - `choices.category`
        - `choices.style`
        - `choices.trend`
+   - If `choices.mode` is `brief`:
+     - Use the Custom Creator Brief parameters:
+       - `choices.brief.creatorName` — Creator/Brand Name
+       - `choices.brief.journeyGoals` — Background and motivation
+       - `choices.brief.creation` — Offering detail
+       - `choices.brief.problem` — Audience pain point
+       - `choices.brief.scope` — Core features and scope
+     - Analyze the brief context to automatically select the most appropriate Category, Style, and Trend matching the brief, and dynamically generate cohesive `brandName`, `accentColor`, and active `modules` tailored to solve their specific customer problems.
 
 ---
 
@@ -76,9 +84,19 @@ Once you are woken up by the background task completion message:
 
 Once you have the configuration variables (Project Name, Category, Style, Trend):
 
+#### Product Philosophy & Commercial Positioning
+When generating any digital product (especially if the user aims to sell it):
+1. **Solve a Real Problem**: Anchor the product copywriting, feature list, and target audience around solving a specific, high-pain customer problem (e.g. automating a slow task, providing rare educational structures, saving cost).
+2. **Create a Clear Plan**: Frame the product deliverables, roadmap, and files as a complete, step-by-step solution to that problem.
+3. **Present it as a Premium Brand**: Design beautiful typography, use cohesive color palettes (applying the `customizerState.accentColor`), write converting headlines/taglines, and present the final output with a high-fidelity landing page, pricing structures, and assets package that feels premium and ready-to-sell without compromising quality.
+4. **Align with Creator Brief**: If the user selected the `brief` mode, the generated copywriting (headlines, value propositions, features), layout elements, and deliverables MUST directly speak to and solve the user's specific audience problem and goals defined in `choices.brief`.
+
+#### Synthesis Workflow
 1. **Use the Project Name** (`choices.projectName`) as the product brand throughout all generated content — landing page headings, ZIP folder naming, showcase title, and any copy.
 
-2. **Synthesize Content** using the `digital-product-creator` rules and appropriate template structures:
+2. **Write Files Atomically**: To prevent the browser from reloading on an incomplete file (which displays an ugly white page), always write new HTML, CSS, or JS files to a temporary path first (e.g., `index.html.tmp`), populate the content completely, and then rename the file to its final name (e.g., `index.html`). The companion server watcher will ignore `.tmp` files and only trigger a clean refresh once the rename operation completes.
+
+3. **Synthesize Content** using the `digital-product-creator` rules and appropriate template structures:
    - **blog**: A two-column Neocities-style personal webspace. Main section has 3-4 retro blog posts with text/ASCII dividers, a status updates/shoutbox widget, an "About the Creator" widget, custom guestbook entries, and site-rings links.
    - **saas**: A landing page blueprint, API schema, database schema, payment flow framework.
    - **course**: 5-8 modules outlining a learning experience, worksheets, slide content.
@@ -88,9 +106,32 @@ Once you have the configuration variables (Project Name, Category, Style, Trend)
    - **dashboard**: Responsive telemetry grids, data graphs, prompt engineering workshop design.
    - **planner**: Launch marketing workflows, content scheduling calendars, product ops pipelines.
    - **wellness**: Nutritional schedulers, fitness workout splits, mindfulness habit loops.
-   - **jarvis**: An interactive browser-based holographic dashboard containing a pulsing arc reactor visualization, voice-activated Web Speech controls, WebRTC camera viewport using MediaPipe hands for gesture recognition (fist click, palm move, pinch-zoom, swipe tabs), dynamic synthesized Web Audio sound FX, customizable external app links, and terminal-style sub-windows.
+   - **jarvis**: An interactive browser-based holographic dashboard.
+     - Copy the Jarvis templates from `/Users/heavn/.gemini/config/skills/create/templates/jarvis-template.html` and `/Users/heavn/.gemini/config/skills/create/templates/jarvis-template.css` to `index.html` and `styles.css` inside `<screen_dir>`.
+     - **Replace parameters** inside `index.html` and `styles.css`:
+       - `{{PROJECT_NAME}}` -> `choices.projectName`
+       - `{{ASSISTANT_NAME}}` -> `choices.customizerState.brandName || "JARVIS"`
+       - `{{ACCENT_COLOR}}` -> `choices.customizerState.accentColor`
+       - `{{ACCENT_GLOW}}` -> A translucent version of accentColor (e.g. `rgba(0, 229, 255, 0.35)`)
+       - `{{TREND_NAME}}` -> `choices.trend`
+     - **Modular Module Filters**: Inspect `choices.customizerState.modules` (e.g., `["gestures", "voice", "audio-synth", "terminal", "diagnostics", "space-map"]`):
+       - If a module is NOT present, strip out its corresponding HTML viewport node and supporting JS logic block from `index.html` (e.g. if `gestures` is disabled, omit the MediaPipe script tags and webcam feed widgets).
+     - Ensure the final output page runs completely offline/client-side and uses browser APIs (Web Speech, WebRTC, AudioContext) to handle all core features.
+   - **ide**: An interactive browser-based developer workspace (Agent IDE).
+     - Copy the templates from `/Users/heavn/.gemini/config/skills/create/templates/ide-template.html` and `/Users/heavn/.gemini/config/skills/create/templates/ide-template.css` to `index.html` and `ide-template.css` inside `<screen_dir>`.
+     - **Replace parameters** inside `index.html` and `ide-template.css`:
+       - `{{PROJECT_NAME}}` -> `choices.projectName`
+       - `{{ACCENT_COLOR}}` -> `choices.customizerState.accentColor`
+       - `{{ACCENT_GLOW}}` -> A translucent version of accentColor (e.g., `rgba(57, 255, 20, 0.25)`)
+     - **Dynamic Agent Roster Generation**: Compile the `{{AGENT_ROSTER_HTML}}` placeholder by mapping each ID in `choices.customizerState.modules` to its avatar card:
+       - `researcher` -> avatar `🔍`, name `AI Researcher`
+       - `architect` -> avatar `📐`, name `AI Architect`
+       - `coder` -> avatar `💻`, name `AI Lead Coder`
+       - `tester` -> avatar `🔬`, name `AI QA Tester`
+       - `planner` -> avatar `📅`, name `AI Marketing Planner`
+     - Ensure the output IDE runs completely client-side, allows adding tasks to a Kanban board, and simulates active agent typing/editing sequences in the editor window.
 
-3. **Apply Design Aesthetic** matching the selected theme (`taste-this` instruction set):
+4. **Apply Design Aesthetic** matching the selected theme (`taste-this` instruction set):
    - **y2k** (Frutiger Metro / Web 2.0 Gloss):
      - Background: Vibrant gradients (Sky blue to aqua teal `#00BFFF` to `#00c3ff`).
      - Layout: Glassmorphic containers (`backdrop-filter: blur(10px)`), pill-shaped navigation, bubbly circular elements, vector star decorations, and circular vectors.
@@ -127,7 +168,7 @@ Once you have the configuration variables (Project Name, Category, Style, Trend)
      - Style: Thick, jagged hand-drawn borders, heavy ink splatters, medieval banners, and distressed metallic frames.
      - Fonts: Blackletter, gothic-serif, or retro typewriters.
 
-4. **Zip Generated Deliverables**:
+5. **Zip Generated Deliverables**:
    Once all files (such as HTML pages, copy files, layouts, schemas, configs) are generated in `<screen_dir>`, compress them into a single ZIP archive named `project_assets.zip` inside `<screen_dir>`. 
    Exclude configuration/meta files like `01_start.html`, `06_showcase.html` and `project_assets.zip` itself.
    
@@ -136,7 +177,7 @@ Once you have the configuration variables (Project Name, Category, Style, Trend)
    python3 -c "import zipfile, os; zf = zipfile.ZipFile('<screen_dir>/project_assets.zip', 'w'); [zf.write(os.path.join('<screen_dir>', f), f) for f in os.listdir('<screen_dir>') if f not in ('01_start.html', '06_showcase.html', 'project_assets.zip')]; zf.close()"
    ```
 
-5. **Visual QA Verification (Anti-Unstyled Prevention)**:
+6. **Visual QA Verification (Anti-Unstyled Prevention)**:
    To prevent unstyled pages (e.g., raw text on white background due to missing styles or incorrect CSS linking):
    - Check `<state_dir>/server-info` to find the current companion server port.
    - Run the headless browser capture script to screenshot the main generated file (e.g., `index.html`):
@@ -144,7 +185,7 @@ Once you have the configuration variables (Project Name, Category, Style, Trend)
    - Use the `view_file` tool to examine `visual_qa.png` and confirm that all styling tokens, colors, layouts, and background rules render properly.
    - If the page looks unstyled, raw, or broken, self-repair the generated CSS and HTML immediately and re-verify until it is premium.
 
-6. **Generate Showcase HTML (`06_showcase.html`)**:
+7. **Generate Showcase HTML (`06_showcase.html`)**:
    - Write a beautifully styled showcase page. It must render:
      - The product name, outcome, tagline, and pricing stack.
      - A modular representation of the product architecture (clickable cards, list items).
@@ -161,7 +202,7 @@ Once you have the configuration variables (Project Name, Category, Style, Trend)
    - Write this HTML file to `<screen_dir>/06_showcase.html` (and delete `01_start.html`).
    - The user's browser will automatically refresh to show the final product layout with the ZIP download button.
 
-7. **Continuous Refinement Loop**:
+8. **Continuous Refinement Loop**:
    - Immediately after writing the showcase, start the background event watcher again:
      `python3 /Users/heavn/.gemini/config/skills/create/scripts/await-event.py <state_dir>/events 300`
    - Stop calling tools and go idle.

@@ -31,11 +31,17 @@
       <p class="subtitle">How would you like to build your digital product today?</p>
     </div>
 
-    <div class="cards-grid cols-2">
+    <div class="cards-grid cols-3">
       <div class="option-card" onclick="selectMode('wizard', this)">
         <div class="card-icon">🎯</div>
         <h3>Interactive Visual Wizard</h3>
         <p>Answer a few questions with curated visual options. Calibrate the product niche, styling, copy, and layout to match your vision.</p>
+      </div>
+
+      <div class="option-card" onclick="selectMode('brief', this)">
+        <div class="card-icon">✍️</div>
+        <h3>Custom Creator Brief</h3>
+        <p>Define your own path. Provide details about your background, journey, and the exact goals and problems you are aiming to solve.</p>
       </div>
 
       <div class="option-card" onclick="selectMode('random', this)">
@@ -47,7 +53,48 @@
 
     <div class="wizard-footer">
       <button class="btn-secondary" onclick="goToStep('name')">Back</button>
-      <button id="mode-next-btn" class="btn-primary" disabled onclick="goToStep('category')">Begin Journey</button>
+      <button id="mode-next-btn" class="btn-primary" disabled onclick="handleModeNext()">Begin Journey</button>
+    </div>
+  </div>
+
+  <!-- STEP 1B: CUSTOM CREATOR BRIEF -->
+  <div id="step-brief" class="wizard-step">
+    <div class="wizard-header">
+      <span class="step-badge">Creator Briefing</span>
+      <h1>Define Your Product Vision</h1>
+      <p class="subtitle">Tell us about your background, objectives, and what you aim to build.</p>
+    </div>
+
+    <div class="brief-layout">
+      <div class="form-group">
+        <label for="brief-name">Your Name or Brand Identity</label>
+        <input type="text" id="brief-name" class="customizer-input" placeholder="e.g. freyathenaa, Drift Creative, Nebula Inc..." autocomplete="off" />
+      </div>
+
+      <div class="form-group">
+        <label for="brief-journey-goals">Your Journey & Goals</label>
+        <textarea id="brief-journey-goals" class="brief-textarea" placeholder="Tell us about your background, your entrepreneurial journey, and what you hope to achieve (e.g. generate passive income, build an audience, solve a workflow bottleneck)..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="brief-creation">Product Offering & Method</label>
+        <textarea id="brief-creation" class="brief-textarea" placeholder="What are you creating and providing to people? How do you want to achieve this (e.g. a minimal SaaS dashboard, a comprehensive interactive course, a personal digital sanctuary)..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="brief-problem">Problems You Are Solving</label>
+        <textarea id="brief-problem" class="brief-textarea" placeholder="What core problems are you solving for your users/audience? What pain points does this address..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="brief-scope">Overall Scope & Core Features</label>
+        <textarea id="brief-scope" class="brief-textarea" placeholder="What is the overall scope of this project? What specific features or modules must be included..."></textarea>
+      </div>
+    </div>
+
+    <div class="wizard-footer">
+      <button class="btn-secondary" onclick="goToStep('mode')">Back</button>
+      <button id="brief-submit-btn" class="btn-primary" onclick="generateFromBrief()">Generate Creation</button>
     </div>
   </div>
 
@@ -119,8 +166,14 @@
         <h3>Jarvis AI / Sci-Fi HUD</h3>
         <p>Your own voice-activated JARVIS system. Complete with target-locked camera, hands-free gestures, and interactive terminal launchers.</p>
       </div>
-    </div>
 
+      <div class="option-card" onclick="selectCategory('ide', this)">
+        <div class="card-icon">🛠️</div>
+        <h3>Agent IDE / Team Workspace</h3>
+        <p>A collaborative workspace console to manage multiple AI agents. Features Kanban boards, chat logs, and live code view panels.</p>
+      </div>
+    </div>
+ 
     <div class="wizard-footer">
       <button class="btn-secondary" onclick="goToStep('mode')">Back</button>
       <button id="category-next-btn" class="btn-primary" disabled onclick="goToStep('aesthetic')">Next: Aesthetic DNA</button>
@@ -184,7 +237,7 @@
         <p>Low-res textured parchment background, heavy high-contrast black ink outlines, and raw metallic gothic frames.</p>
       </div>
     </div>
-
+ 
     <div class="wizard-footer">
       <button class="btn-secondary" onclick="goToStep('category')">Back</button>
       <button id="aesthetic-next-btn" class="btn-primary" disabled onclick="goToStep('trend')">Next: Market Trend</button>
@@ -242,7 +295,7 @@
         <p>Built for small private webrings, cozy invite-only guestbooks, and shared atmospheric campfires.</p>
       </div>
     </div>
-
+ 
     <div class="wizard-footer">
       <button class="btn-secondary" onclick="goToStep('aesthetic')">Back</button>
       <button id="trend-next-btn" class="btn-primary" disabled onclick="goToStep('customizer')">Next: Customize Brand</button>
@@ -352,6 +405,7 @@
     category: null,
     style: null,
     trend: null,
+    brief: null,
     customizerState: {
       brandName: '',
       accentColor: '',
@@ -382,6 +436,14 @@
       setTimeout(() => document.getElementById('project-name-input').focus(), 100);
     }
 
+    // Pre-populate creator brief brand name from step 0 input if empty
+    if (stepName === 'brief') {
+      const briefNameInput = document.getElementById('brief-name');
+      if (!briefNameInput.value.trim() && choices.projectName) {
+        briefNameInput.value = choices.projectName;
+      }
+    }
+
     // Dynamic rendering of customizer step
     if (stepName === 'customizer') {
       renderCustomizer();
@@ -396,6 +458,14 @@
     
     if (mode === 'random') {
       generateRandom();
+    }
+  }
+
+  function handleModeNext() {
+    if (choices.mode === 'brief') {
+      goToStep('brief');
+    } else if (choices.mode === 'wizard') {
+      goToStep('category');
     }
   }
 
@@ -425,8 +495,28 @@
     element.classList.add('selected');
     document.getElementById('trend-next-btn').disabled = false;
     
-    // Quick transition to submit
+    // Quick transition to customizer
     setTimeout(() => goToStep('customizer'), 150);
+  }
+
+  function generateFromBrief() {
+    const briefNameVal = document.getElementById('brief-name').value.trim();
+    if (briefNameVal) {
+      choices.projectName = briefNameVal;
+    }
+    choices.brief = {
+      creatorName: briefNameVal,
+      journeyGoals: document.getElementById('brief-journey-goals').value.trim(),
+      creation: document.getElementById('brief-creation').value.trim(),
+      problem: document.getElementById('brief-problem').value.trim(),
+      scope: document.getElementById('brief-scope').value.trim()
+    };
+    
+    goToStep('loading');
+    submitEvent({
+      action: 'generate',
+      choices: choices
+    });
   }
 
   /* ─── Customizer Dynamic Rendering ─── */
@@ -449,6 +539,24 @@
         { id: "terminal", name: "Interactive Command Terminal", desc: "Interactive command input pane for executing HUD text tasks.", checked: true },
         { id: "diagnostics", name: "System Telemetry Dials", desc: "Diagnostics tracking local CPU, memory specs, latency, and telemetry.", checked: true },
         { id: "space-map", name: "Stellar Star Map Visualizer", desc: "Floating interactive 3D particle canvas visualizer.", checked: false }
+      ]
+    },
+    ide: {
+      label: "Workspace Branding Name",
+      placeholder: "e.g. Athena Dev, Nexus Lab, Project Matrix...",
+      defaultName: "Athena Dev Workspace",
+      colors: [
+        { name: "Matrix Green", value: "#39ff14" },
+        { name: "Cobalt Tech", value: "#00e5ff" },
+        { name: "Cyber Pink", value: "#ff007f" },
+        { name: "Slate Minimal", value: "#8a8f98" }
+      ],
+      modules: [
+        { id: "researcher", name: "AI Researcher Agent", desc: "Browses simulated databases, outlines plans, and crawls requirements.", checked: true },
+        { id: "architect", name: "AI Code Architect Agent", desc: "Designs file trees, API interfaces, and database schemas.", checked: true },
+        { id: "coder", name: "AI Lead Coder Agent", desc: "Populates code files, writes functions, and manages logic.", checked: true },
+        { id: "tester", name: "AI QA Tester Agent", desc: "Scans output for syntax issues, runs test cases, and fixes bugs.", checked: true },
+        { id: "planner", name: "AI Marketing Planner Agent", desc: "Drafts release roadmaps, launch strategies, and copywriting.", checked: false }
       ]
     },
     blog: {
@@ -644,9 +752,9 @@
   }
 
   .customizer-section {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--panel-dark);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 4px;
     padding: 24px;
     backdrop-filter: blur(10px);
   }
@@ -655,9 +763,9 @@
     font-family: 'Outfit', sans-serif;
     font-size: 20px;
     margin-bottom: 18px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
-    color: var(--text-color);
+    color: var(--text-main);
   }
 
   .form-group {
@@ -678,18 +786,18 @@
     width: 100%;
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 14px 16px;
     font-family: 'Inter', sans-serif;
     font-size: 15px;
-    color: var(--text-color);
+    color: var(--text-main);
     outline: none;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .customizer-input:focus {
     border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
+    box-shadow: 0 0 0 3px var(--accent-glow);
   }
 
   .color-presets {
@@ -699,23 +807,23 @@
   }
 
   .color-dot {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
     border: 2px solid transparent;
     cursor: pointer;
-    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.15s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: transform 0.15s ease, border-color 0.15s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   }
 
   .color-dot:hover {
-    transform: scale(1.15);
+    transform: scale(1.1);
   }
 
   .color-dot.selected {
     border-color: #fff;
-    transform: scale(1.15);
-    box-shadow: 0 0 12px var(--accent-color);
+    transform: scale(1.1);
+    box-shadow: 0 0 8px var(--accent-color);
   }
 
   .modules-list {
@@ -730,15 +838,15 @@
     gap: 14px;
     background: rgba(255, 255, 255, 0.01);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 14px 16px;
     cursor: pointer;
     transition: all 0.2s ease;
   }
 
   .module-checkbox-label:hover {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.12);
   }
 
   .module-checkbox-label input[type="checkbox"] {
@@ -758,7 +866,7 @@
   .module-title {
     font-size: 14px;
     font-weight: 600;
-    color: var(--text-color);
+    color: var(--text-main);
   }
 
   .module-desc {
@@ -767,21 +875,55 @@
     margin-top: 2px;
   }
 
+  /* ─── CREATOR BRIEF STEP STYLING ─── */
+  .brief-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 680px;
+    margin: 0 auto 36px;
+    text-align: left;
+    background: var(--panel-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 32px;
+    backdrop-filter: blur(10px);
+  }
+
+  .brief-textarea {
+    width: 100%;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 14px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--text-main);
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .brief-textarea:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
 
   .name-field-wrapper {
     display: flex;
     align-items: stretch;
     gap: 0;
-    border-radius: 14px;
+    border-radius: 4px;
     overflow: hidden;
-    border: 2px solid var(--border-color);
-    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.02);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .name-field-wrapper:focus-within {
     border-color: var(--accent-color);
-    box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.08), 0 4px 20px rgba(0, 229, 255, 0.12);
+    box-shadow: 0 0 0 3px var(--accent-glow);
   }
 
   .name-input {
@@ -793,7 +935,7 @@
     font-family: 'Outfit', sans-serif;
     font-size: 18px;
     font-weight: 500;
-    color: var(--text-color);
+    color: var(--text-main);
     letter-spacing: -0.2px;
   }
 
@@ -808,7 +950,7 @@
     align-items: center;
     justify-content: center;
     width: 56px;
-    background: rgba(0, 229, 255, 0.08);
+    background: rgba(196, 164, 130, 0.08);
     border: none;
     border-left: 1px solid var(--border-color);
     cursor: pointer;
@@ -817,11 +959,11 @@
   }
 
   .btn-dice:hover {
-    background: rgba(0, 229, 255, 0.18);
+    background: rgba(196, 164, 130, 0.18);
   }
 
   .btn-dice:active {
-    transform: scale(0.92);
+    transform: scale(0.95);
   }
 
   .btn-dice.rolling .dice-icon {
@@ -829,13 +971,13 @@
   }
 
   .dice-icon {
-    font-size: 22px;
+    font-size: 20px;
     display: block;
   }
 
   @keyframes diceRoll {
     0%   { transform: rotate(0deg) scale(1); }
-    40%  { transform: rotate(180deg) scale(1.3); }
+    40%  { transform: rotate(180deg) scale(1.2); }
     100% { transform: rotate(360deg) scale(1); }
   }
 
@@ -844,7 +986,7 @@
     color: var(--text-muted);
     font-size: 12px;
     margin-top: 12px;
-    opacity: 0.6;
+    opacity: 0.5;
   }
 
   .wizard-container {
@@ -873,11 +1015,12 @@
   }
 
   .step-badge {
-    background: rgba(0, 229, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
     color: var(--accent-color);
     padding: 6px 12px;
-    border-radius: 12px;
-    font-size: 11px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 10px;
     text-transform: uppercase;
     font-weight: 600;
     letter-spacing: 1px;
@@ -887,7 +1030,7 @@
 
   h1 {
     font-family: 'Outfit', sans-serif;
-    font-weight: 800;
+    font-weight: 400;
     font-size: 34px;
     margin-bottom: 8px;
     letter-spacing: -0.5px;
@@ -918,63 +1061,44 @@
     width: fit-content;
   }
 
+  /* Keep icons plain color without loud gradient filters */
   .y2k-icon {
-    background: linear-gradient(135deg, #00bfff, #ff007f);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 2px 5px rgba(0, 191, 255, 0.4));
+    color: var(--accent-color);
   }
 
   .console-icon {
-    background: linear-gradient(135deg, #ff0055, #3a0ca3);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: bold;
+    color: var(--accent-color);
   }
 
   .clay-icon {
-    background: linear-gradient(135deg, #ffb5a7, #fcd5ce);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--accent-color);
   }
 
   .radio-icon {
-    background: linear-gradient(135deg, #ff3333, #330000);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 5px rgba(255, 51, 51, 0.7));
+    color: var(--accent-color);
   }
 
   .aero-icon {
-    background: linear-gradient(135deg, #00ff88, #00bfff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 2px 5px rgba(0, 255, 136, 0.4));
+    color: var(--accent-color);
   }
 
   .vapor-icon {
-    background: linear-gradient(135deg, #ff007f, #7f00ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 2px 5px rgba(255, 0, 127, 0.4));
+    color: var(--accent-color);
   }
 
   .goth-icon {
-    background: linear-gradient(135deg, #ff0055, #00ffff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 8px rgba(255, 0, 85, 0.6));
+    color: var(--accent-color);
   }
 
   .gothic-icon {
-    color: #8a8f98;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+    color: var(--text-muted);
   }
 
   .option-card h3 {
     font-family: 'Outfit', sans-serif;
     font-size: 18px;
     margin-bottom: 8px;
+    font-weight: 400;
   }
 
   .option-card p {
@@ -1016,7 +1140,7 @@
   .loader {
     width: 80px;
     height: 80px;
-    border: 4px solid rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.05);
     border-radius: 50%;
     border-top-color: var(--accent-color);
     animation: spin 1.2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
@@ -1029,7 +1153,7 @@
     transform: translate(-50%, -50%);
     width: 40px;
     height: 40px;
-    background: radial-gradient(circle, rgba(0, 229, 255, 0.2) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(196, 164, 130, 0.1) 0%, transparent 70%);
     border-radius: 50%;
     animation: pulse 1.8s ease-in-out infinite;
   }
@@ -1046,7 +1170,7 @@
   .console-box {
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 16px 24px;
     text-align: left;
     width: 100%;
@@ -1054,7 +1178,7 @@
     font-family: 'Fira Code', monospace;
     font-size: 12px;
     color: var(--text-muted);
-    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+    box-shadow: none;
   }
 
   .console-line {
