@@ -1,0 +1,1064 @@
+<div class="wizard-container">
+  
+  <!-- STEP 0: PROJECT NAME -->
+  <div id="step-name" class="wizard-step active">
+    <div class="wizard-header">
+      <span class="step-badge">Let's Begin</span>
+      <h1>Name Your Project</h1>
+      <p class="subtitle">Give your creation an identity — or let us surprise you.</p>
+    </div>
+
+    <div class="name-input-group">
+      <div class="name-field-wrapper">
+        <input type="text" id="project-name-input" class="name-input" placeholder="e.g. Nebula Kit, Drift Studio, Pixel Forge..." autocomplete="off" spellcheck="false" />
+        <button class="btn-dice" onclick="rollRandomName()" title="Generate a random name">
+          <span class="dice-icon">🎲</span>
+        </button>
+      </div>
+      <p class="name-hint">This name will appear on your landing page, assets, and ZIP export.</p>
+    </div>
+
+    <div class="wizard-footer">
+      <button id="name-next-btn" class="btn-primary" disabled onclick="goToStep('mode')">Continue</button>
+    </div>
+  </div>
+
+  <!-- STEP 1: WELCOME & MODE CHOICE -->
+  <div id="step-mode" class="wizard-step">
+    <div class="wizard-header">
+      <span class="step-badge">Creation Mode</span>
+      <h1>Select Creation Mode</h1>
+      <p class="subtitle">How would you like to build your digital product today?</p>
+    </div>
+
+    <div class="cards-grid cols-2">
+      <div class="option-card" onclick="selectMode('wizard', this)">
+        <div class="card-icon">🎯</div>
+        <h3>Interactive Visual Wizard</h3>
+        <p>Answer a few questions with curated visual options. Calibrate the product niche, styling, copy, and layout to match your vision.</p>
+      </div>
+
+      <div class="option-card" onclick="selectMode('random', this)">
+        <div class="card-icon">🎲</div>
+        <h3>Fully Random</h3>
+        <p>Let the AI take full control. We will synthesize a highly trending digital product, landing page, and pricing model automatically.</p>
+      </div>
+    </div>
+
+    <div class="wizard-footer">
+      <button class="btn-secondary" onclick="goToStep('name')">Back</button>
+      <button id="mode-next-btn" class="btn-primary" disabled onclick="goToStep('category')">Begin Journey</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: CATEGORY CHOICE -->
+  <div id="step-category" class="wizard-step">
+    <div class="wizard-header">
+      <span class="step-badge">Step 1 of 4</span>
+      <h1>Select Product Vector</h1>
+      <p class="subtitle">What category of digital product or space are we engineering today?</p>
+    </div>
+
+    <div class="cards-grid cols-3">
+      <div class="option-card" onclick="selectCategory('blog', this)">
+        <div class="card-icon">🌐</div>
+        <h3>Personal Blog / Indie Webspace</h3>
+        <p>An atmospheric personal Neocities-style blog, including a posts feed, sidebar navigation, custom guestbook, and about section.</p>
+      </div>
+
+      <div class="option-card" onclick="selectCategory('saas', this)">
+        <div class="card-icon">💻</div>
+        <h3>SaaS & Web App</h3>
+        <p>Full-stack SaaS app frameworks, API routing setups, and authentication wrappers.</p>
+      </div>
+
+      <div class="option-card" onclick="selectCategory('course', this)">
+        <div class="card-icon">🎓</div>
+        <h3>Digital Course</h3>
+        <p>5-8 modules outlining a learning experience, worksheets, and slide content.</p>
+      </div>
+
+      <div class="option-card" onclick="selectCategory('ebook', this)">
+        <div class="card-icon">📚</div>
+        <h3>Ebook & Writing Plan</h3>
+        <p>Author chapter guides, hook structures, and marketing funnel copies.</p>
+      </div>
+
+      <div class="option-card" onclick="selectCategory('plugin', this)">
+        <div class="card-icon">🔌</div>
+        <h3>App Plugins & Extensions</h3>
+        <p>Manifest V3 Chrome extensions, VS Code extensions, or Figma plugins.</p>
+      </div>
+
+      <div class="option-card" onclick="selectCategory('game', this)">
+        <div class="card-icon">🎮</div>
+        <h3>Fun Games & Visuals</h3>
+        <p>HTML5 Canvas games, web animations, or interactive canvas shaders.</p>
+      </div>
+
+      <div class="option-card" onclick="selectCategory('dashboard', this)">
+        <div class="card-icon">📊</div>
+        <h3>Utility Dashboard</h3>
+        <p>Responsive metrics tracking, prompt engineering workbenches, or dev consoles.</p>
+      </div>
+
+      <div class="option-card" onclick="selectCategory('planner', this)">
+        <div class="card-icon">📅</div>
+        <h3>Productivity & Marketing</h3>
+        <p>Launch strategies, social content calendars, and operations schedulers.</p>
+      </div>
+
+      <div class="option-card" onclick="selectCategory('wellness', this)">
+        <div class="card-icon">❤️</div>
+        <h3>Wellness & Health</h3>
+        <p>Fitness routines, diet plans, sleep logs, and mindfulness guides.</p>
+      </div>
+
+      <div class="option-card" onclick="selectCategory('jarvis', this)">
+        <div class="card-icon">🤖</div>
+        <h3>Jarvis AI / Sci-Fi HUD</h3>
+        <p>Your own voice-activated JARVIS system. Complete with target-locked camera, hands-free gestures, and interactive terminal launchers.</p>
+      </div>
+    </div>
+
+    <div class="wizard-footer">
+      <button class="btn-secondary" onclick="goToStep('mode')">Back</button>
+      <button id="category-next-btn" class="btn-primary" disabled onclick="goToStep('aesthetic')">Next: Aesthetic DNA</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: AESTHETIC DNA -->
+  <div id="step-aesthetic" class="wizard-step">
+    <div class="wizard-header">
+      <span class="step-badge">Step 2 of 4</span>
+      <h1>Determine Design DNA</h1>
+      <p class="subtitle">Choose the core aesthetic language that represents your brand.</p>
+    </div>
+
+    <div class="cards-grid cols-2">
+      <div class="option-card" onclick="selectStyle('y2k', this)">
+        <div class="card-icon y2k-icon">☄️</div>
+        <h3>Y2K / Frutiger Metro</h3>
+        <p>Inspired by brawlersworld & frutiger aero archive. Glossy vector stars, glassy panel layers, bubbles, techno-optimist gradients.</p>
+      </div>
+
+      <div class="option-card" onclick="selectStyle('retro-console', this)">
+        <div class="card-icon console-icon">🎮</div>
+        <h3>Retro Console / JP 3D</h3>
+        <p>Inspired by burgeritchi. 90s console gaming HUD, pixel typography, CRT scanline grid overlays, isometric panel frames.</p>
+      </div>
+
+      <div class="option-card" onclick="selectStyle('claymorphic', this)">
+        <div class="card-icon clay-icon">☁️</div>
+        <h3>Claymorphic / Soft 3D</h3>
+        <p>Inspired by infini. Tactile, inflated clay-like cards, play-doh buttons, pastel colors, and soft inner shadows.</p>
+      </div>
+
+      <div class="option-card" onclick="selectStyle('crt-radio', this)">
+        <div class="card-icon radio-icon">📟</div>
+        <h3>CRT Radio / Dark Industrial</h3>
+        <p>Inspired by xylox & megaknecht. Glowing red/amber VFD screen, old car radio interface, fallout gothic grid, retro grunge hardware.</p>
+      </div>
+
+      <div class="option-card" onclick="selectStyle('frutiger-aero', this)">
+        <div class="card-icon aero-icon">🌿</div>
+        <h3>Frutiger Aero / Aqua Web</h3>
+        <p>Glossy glass reflections, bright lime green and sky blue gradients, floating water bubbles, and clean skeuomorphic icons.</p>
+      </div>
+
+      <div class="option-card" onclick="selectStyle('vaporwave', this)">
+        <div class="card-icon vapor-icon">🌴</div>
+        <h3>Vaporwave / Glitch Art</h3>
+        <p>Pastel pink/violet sunset gradients, wireframe grid perspectives, scanlines, CRT screen buzz, and retro palms.</p>
+      </div>
+
+      <div class="option-card" onclick="selectStyle('cyber-goth', this)">
+        <div class="card-icon goth-icon">🕸️</div>
+        <h3>Cyber-Goth / Synthwave</h3>
+        <p>Deep dark carbon/slate panels, high-contrast glowing neon magenta/cyan borders, and wireframe outlines.</p>
+      </div>
+
+      <div class="option-card" onclick="selectStyle('gothic-grunge', this)">
+        <div class="card-icon gothic-icon">🏰</div>
+        <h3>Medieval Gothic / Felvidek</h3>
+        <p>Low-res textured parchment background, heavy high-contrast black ink outlines, and raw metallic gothic frames.</p>
+      </div>
+    </div>
+
+    <div class="wizard-footer">
+      <button class="btn-secondary" onclick="goToStep('category')">Back</button>
+      <button id="aesthetic-next-btn" class="btn-primary" disabled onclick="goToStep('trend')">Next: Market Trend</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: TREND VECTOR -->
+  <div id="step-trend" class="wizard-step">
+    <div class="wizard-header">
+      <span class="step-badge">Step 3 of 4</span>
+      <h1>Inject Market Vector</h1>
+      <p class="subtitle">Select the prevailing trend vector to guide content and target audience positioning.</p>
+    </div>
+
+    <div class="cards-grid cols-3">
+      <div class="option-card" onclick="selectTrend('ai-agents', this)">
+        <div class="card-icon">⚡</div>
+        <h3>AI Agent Automation</h3>
+        <p>Positioned for builders deploying agentic pipelines, prompt operations, LLM memory tools, and local workflows.</p>
+      </div>
+
+      <div class="option-card" onclick="selectTrend('solopreneur', this)">
+        <div class="card-icon">📐</div>
+        <h3>Solopreneur Minimalist</h3>
+        <p>Clean, single-purpose design emphasizing raw utility, fast implementation, zero bloat, and highly focused niches.</p>
+      </div>
+
+      <div class="option-card" onclick="selectTrend('neo-brutalist', this)">
+        <div class="card-icon">🎨</div>
+        <h3>Neo-Brutalism Grid</h3>
+        <p>Bold outlines, print halftone textures, experimental palettes, and high contrast. Appealing to creators and creative developers.</p>
+      </div>
+
+      <div class="option-card" onclick="selectTrend('local-first', this)">
+        <div class="card-icon">💾</div>
+        <h3>Local-First / WASM-Driven</h3>
+        <p>Targeting zero-latency local database storage (WASM, SQLite, local caching) running entirely in the client.</p>
+      </div>
+
+      <div class="option-card" onclick="selectTrend('zero-bloat', this)">
+        <div class="card-icon">☕</div>
+        <h3>Zero-Bloat Digital Detox</h3>
+        <p>Aiming at distraction-free layouts, pure reading spaces, and clean text feeds defying the attention economy.</p>
+      </div>
+
+      <div class="option-card" onclick="selectTrend('privacy-first', this)">
+        <div class="card-icon">🔒</div>
+        <h3>Privacy-First Vault</h3>
+        <p>Targeted at client-side encryption, cookie-less secure operations, and self-hosted privacy standards.</p>
+      </div>
+
+      <div class="option-card" onclick="selectTrend('micro-community', this)">
+        <div class="card-icon">🔮</div>
+        <h3>Vibe-Driven Cozy Web</h3>
+        <p>Built for small private webrings, cozy invite-only guestbooks, and shared atmospheric campfires.</p>
+      </div>
+    </div>
+
+    <div class="wizard-footer">
+      <button class="btn-secondary" onclick="goToStep('aesthetic')">Back</button>
+      <button id="trend-next-btn" class="btn-primary" disabled onclick="goToStep('customizer')">Next: Customize Brand</button>
+    </div>
+  </div>
+
+  <!-- STEP 5: BRAND & MODULAR CUSTOMIZER -->
+  <div id="step-customizer" class="wizard-step">
+    <div class="wizard-header">
+      <span class="step-badge">Step 4 of 4</span>
+      <h1>Branding & Modules</h1>
+      <p class="subtitle">Personalize accent styling, brand names, and toggle active layout modules.</p>
+    </div>
+
+    <div class="customizer-layout">
+      <!-- Left: Identity & Colors -->
+      <div class="customizer-section">
+        <h2>Visual Identity</h2>
+        
+        <div id="dynamic-identity-inputs">
+          <!-- Dynamically populated -->
+        </div>
+
+        <div class="form-group">
+          <label>Accent Color Theme</label>
+          <div class="color-presets" id="color-presets-container">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Feature Modules Toggle -->
+      <div class="customizer-section">
+        <h2>Active Modules</h2>
+        <div class="modules-list" id="modules-list-container">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+
+    <div class="wizard-footer">
+      <button class="btn-secondary" onclick="goToStep('trend')">Back</button>
+      <button class="btn-primary" onclick="generateProduct()">Generate Creation</button>
+    </div>
+  </div>
+
+  <!-- STEP 5: LOADING / GENERATING -->
+  <div id="step-loading" class="wizard-step">
+    <div class="welcome-container">
+      <div class="loader-container">
+        <div class="loader"></div>
+        <div class="radar-scan"></div>
+      </div>
+      <h1>Synthesizing Digital Offer...</h1>
+      <p class="subtitle">Applying brand-kit aesthetics, architectural positioning, and converting copywriting formulas.</p>
+      
+      <div class="console-box">
+        <div class="console-line">> Initializing creation engine... [OK]</div>
+        <div class="console-line">> Resolving trend-guided metaphor... [OK]</div>
+        <div class="console-line">> Designing modular product blueprint... [RUNNING]</div>
+        <div class="console-line">> Applying curation filters from taste-this... [PENDING]</div>
+        <div class="console-line">> Drafting copy framework... [PENDING]</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  /* ─── Name Generator Word Banks ─── */
+  const NAME_ADJ = [
+    'Nebula','Drift','Pixel','Nova','Velvet','Prism','Lunar','Flux','Ember','Cobalt',
+    'Neon','Frost','Solar','Bloom','Vapor','Onyx','Aura','Zinc','Dusk','Echo',
+    'Ivory','Optic','Turbo','Silk','Quartz','Coral','Atom','Haze','Storm','Jade',
+    'Rogue','Void','Blitz','Cryo','Warp','Lush','Aegis','Retro','Helix','Indie'
+  ];
+  const NAME_NOUN = [
+    'Kit','Studio','Forge','Lab','Deck','Hub','Pulse','Vault','Grid','Core',
+    'Works','Craft','Engine','Hive','Base','Den','Spark','Frame','Wave','Node',
+    'Stack','Shed','Zone','Lens','Wire','Mill','Dock','Pod','Arc','Rift',
+    'Byte','Gate','Mint','Loom','Axis','Cove','Ink','Box','Tap','Orb'
+  ];
+  const NAME_SUFFIX = [
+    '','','','', // weighted towards no suffix
+    ' Pro',' HQ',' OS',' XR',' AI',' V2',' Max',' Go',' One',' Zero'
+  ];
+
+  function rollRandomName() {
+    const adj = NAME_ADJ[Math.floor(Math.random() * NAME_ADJ.length)];
+    const noun = NAME_NOUN[Math.floor(Math.random() * NAME_NOUN.length)];
+    const suf = NAME_SUFFIX[Math.floor(Math.random() * NAME_SUFFIX.length)];
+    const input = document.getElementById('project-name-input');
+    
+    // Animate the dice button
+    const btn = document.querySelector('.btn-dice');
+    btn.classList.add('rolling');
+    setTimeout(() => btn.classList.remove('rolling'), 400);
+    
+    input.value = adj + ' ' + noun + suf;
+    input.dispatchEvent(new Event('input'));
+  }
+
+  /* ─── Choices State ─── */
+  let choices = {
+    projectName: null,
+    mode: null,
+    category: null,
+    style: null,
+    trend: null,
+    customizerState: {
+      brandName: '',
+      accentColor: '',
+      modules: []
+    }
+  };
+
+  /* ─── Name Input Listener ─── */
+  const nameInput = document.getElementById('project-name-input');
+  nameInput.addEventListener('input', function() {
+    const val = this.value.trim();
+    choices.projectName = val || null;
+    document.getElementById('name-next-btn').disabled = !val;
+  });
+  nameInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && this.value.trim()) {
+      goToStep('mode');
+    }
+  });
+
+  /* ─── Navigation ─── */
+  function goToStep(stepName) {
+    document.querySelectorAll('.wizard-step').forEach(step => step.classList.remove('active'));
+    document.getElementById('step-' + stepName).classList.add('active');
+    
+    // Auto-focus name input when returning to name step
+    if (stepName === 'name') {
+      setTimeout(() => document.getElementById('project-name-input').focus(), 100);
+    }
+
+    // Dynamic rendering of customizer step
+    if (stepName === 'customizer') {
+      renderCustomizer();
+    }
+  }
+
+  function selectMode(mode, element) {
+    choices.mode = mode;
+    document.querySelectorAll('#step-mode .option-card').forEach(card => card.classList.remove('selected'));
+    element.classList.add('selected');
+    document.getElementById('mode-next-btn').disabled = false;
+    
+    if (mode === 'random') {
+      generateRandom();
+    }
+  }
+
+  function selectCategory(category, element) {
+    choices.category = category;
+    document.querySelectorAll('#step-category .option-card').forEach(card => card.classList.remove('selected'));
+    element.classList.add('selected');
+    document.getElementById('category-next-btn').disabled = false;
+    
+    // Quick transition on click
+    setTimeout(() => goToStep('aesthetic'), 150);
+  }
+
+  function selectStyle(style, element) {
+    choices.style = style;
+    document.querySelectorAll('#step-aesthetic .option-card').forEach(card => card.classList.remove('selected'));
+    element.classList.add('selected');
+    document.getElementById('aesthetic-next-btn').disabled = false;
+    
+    // Quick transition on click
+    setTimeout(() => goToStep('trend'), 150);
+  }
+
+  function selectTrend(trend, element) {
+    choices.trend = trend;
+    document.querySelectorAll('#step-trend .option-card').forEach(card => card.classList.remove('selected'));
+    element.classList.add('selected');
+    document.getElementById('trend-next-btn').disabled = false;
+    
+    // Quick transition to submit
+    setTimeout(() => goToStep('customizer'), 150);
+  }
+
+  /* ─── Customizer Dynamic Rendering ─── */
+  const CUSTOMIZER_DATA = {
+    jarvis: {
+      label: "AI System Assistant Name",
+      placeholder: "e.g. JARVIS, FRIDAY, EDITH, HAL...",
+      defaultName: "JARVIS",
+      colors: [
+        { name: "Cyan Spark", value: "#00e5ff" },
+        { name: "Iron Red", value: "#ff003c" },
+        { name: "Matrix Green", value: "#39ff14" },
+        { name: "Fallout Amber", value: "#ffb000" },
+        { name: "Deep Purple", value: "#bf00ff" }
+      ],
+      modules: [
+        { id: "gestures", name: "Hand Gesture Controls (Camera)", desc: "WebRTC camera gesture tracking (open hand cursor, fist click/drag) using MediaPipe.", checked: true },
+        { id: "voice", name: "Voice Command Engine (Speech)", desc: "Real-time speech recognition & speech synthesis response engine.", checked: true },
+        { id: "audio-synth", name: "Dynamic Web Audio Sound FX", desc: "Dynamic sci-fi sweeps, alarm sound indicators, and notification pings.", checked: true },
+        { id: "terminal", name: "Interactive Command Terminal", desc: "Interactive command input pane for executing HUD text tasks.", checked: true },
+        { id: "diagnostics", name: "System Telemetry Dials", desc: "Diagnostics tracking local CPU, memory specs, latency, and telemetry.", checked: true },
+        { id: "space-map", name: "Stellar Star Map Visualizer", desc: "Floating interactive 3D particle canvas visualizer.", checked: false }
+      ]
+    },
+    blog: {
+      label: "Space Branding Title",
+      placeholder: "e.g. Retro Corner, Indie logs, Pixel Room...",
+      defaultName: "Indie Webspace",
+      colors: [
+        { name: "Classic Neocities", value: "#3b82f6" },
+        { name: "Claymorphic Peach", value: "#ffb5a7" },
+        { name: "Cyberpunk Goth", value: "#ff007f" },
+        { name: "Old Radio Red", value: "#ef4444" },
+        { name: "Fallout Green", value: "#22c55e" }
+      ],
+      modules: [
+        { id: "guestbook", name: "Interactive Guestbook Wall", desc: "Allows readers to drop messages and signatures in a local guestbook log.", checked: true },
+        { id: "shoutbox", name: "Live Shoutbox / Updates log", desc: "Retro instant status micro-blog module to post quick thoughts.", checked: true },
+        { id: "music-player", name: "Retro Audio Player widget", desc: "An audio deck loaded with dynamic background chip loops.", checked: true },
+        { id: "webrings", name: "Webring site-ring footer", desc: "A site directory strip linking to neighbor retro portals.", checked: false }
+      ]
+    },
+    saas: {
+      label: "Brand Headline Tagline",
+      placeholder: "e.g. Developer workspace orchestration tool...",
+      defaultName: "Dev Pipeline Orchestrator",
+      colors: [
+        { name: "Indigo Tech", value: "#6366f1" },
+        { name: "Emerald Growth", value: "#10b981" },
+        { name: "Hot Coral", value: "#f43f5e" },
+        { name: "Slate Minimal", value: "#64748b" }
+      ],
+      modules: [
+        { id: "jwt-auth", name: "JWT Authentications Screens", desc: "Ready-to-use Secure Login, Register, Password Recovery UI templates.", checked: true },
+        { id: "stripe-pricing", name: "Stripe Billing pricing cards", desc: "Sleek feature grid tiers showing Monthly/Annual tiers.", checked: true },
+        { id: "admin-dashboard", name: "Admin control metrics HUD", desc: "Data graphs showing user analytics, subscription status, APIs calls.", checked: true },
+        { id: "api-docs", name: "Developer API docs space", desc: "Markdown code snippets showing curl, node, python request grids.", checked: false }
+      ]
+    },
+    general: {
+      label: "Branding Subtitle/Outcome",
+      placeholder: "e.g. Modern developer solutions...",
+      defaultName: "Engineered with Create AI",
+      colors: [
+        { name: "Modern Blue", value: "#3b82f6" },
+        { name: "Forest Green", value: "#10b981" },
+        { name: "Vibrant Orange", value: "#f97316" },
+        { name: "Royal Violet", value: "#8b5cf6" }
+      ],
+      modules: [
+        { id: "feature-grid", name: "Interactive Feature Grid", desc: "Highlight core outcomes with beautiful glass icons.", checked: true },
+        { id: "cta-form", name: "Newsletter Call-to-action", desc: "Email capture box with immediate success feedback states.", checked: true },
+        { id: "pricing", name: "Tiered Pricing stack", desc: "Simple pricing layout modules ready for Stripe links.", checked: true },
+        { id: "testimonials", name: "Customer Testimonials feed", desc: "Beautiful card review sliders showing ratings.", checked: false }
+      ]
+    }
+  };
+
+  function renderCustomizer() {
+    const category = choices.category || 'general';
+    const config = CUSTOMIZER_DATA[category] || CUSTOMIZER_DATA.general;
+
+    // Render Branding Title input
+    const inputsContainer = document.getElementById('dynamic-identity-inputs');
+    inputsContainer.innerHTML = `
+      <div class="form-group">
+        <label>${config.label}</label>
+        <input type="text" id="customizer-brand-input" class="customizer-input" 
+          value="${choices.customizerState.brandName || config.defaultName}" 
+          placeholder="${config.placeholder}" autocomplete="off" />
+      </div>
+    `;
+
+    // Cache state
+    if (!choices.customizerState.brandName) {
+      choices.customizerState.brandName = config.defaultName;
+    }
+
+    // Bind event
+    document.getElementById('customizer-brand-input').addEventListener('input', function() {
+      choices.customizerState.brandName = this.value.trim() || config.defaultName;
+    });
+
+    // Render Colors
+    const colorsContainer = document.getElementById('color-presets-container');
+    colorsContainer.innerHTML = '';
+    
+    // Choose initial color if not set
+    const defaultColor = choices.customizerState.accentColor || config.colors[0].value;
+    choices.customizerState.accentColor = defaultColor;
+
+    config.colors.forEach((col, index) => {
+      const isSelected = col.value === choices.customizerState.accentColor;
+      const dot = document.createElement('div');
+      dot.className = `color-dot ${isSelected ? 'selected' : ''}`;
+      dot.style.backgroundColor = col.value;
+      dot.title = col.name;
+      dot.onclick = function() {
+        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+        dot.classList.add('selected');
+        choices.customizerState.accentColor = col.value;
+        // Dynamically preview styling changes on the builder UI
+        document.documentElement.style.setProperty('--accent-color', col.value);
+        document.documentElement.style.setProperty('--accent-glow', col.value + '40');
+      };
+      colorsContainer.appendChild(dot);
+    });
+
+    // Apply active color to stylesheet dynamically
+    document.documentElement.style.setProperty('--accent-color', choices.customizerState.accentColor);
+
+    // Render Modules Checklist
+    const modulesContainer = document.getElementById('modules-list-container');
+    modulesContainer.innerHTML = '';
+
+    // Initialize state if empty
+    if (!choices.customizerState.modules || choices.customizerState.modules.length === 0) {
+      choices.customizerState.modules = config.modules.filter(m => m.checked).map(m => m.id);
+    }
+
+    config.modules.forEach(mod => {
+      const isChecked = choices.customizerState.modules.includes(mod.id);
+      
+      const label = document.createElement('label');
+      label.className = 'module-checkbox-label';
+      label.innerHTML = `
+        <input type="checkbox" data-id="${mod.id}" ${isChecked ? 'checked' : ''} />
+        <div class="module-info">
+          <span class="module-title">${mod.name}</span>
+          <span class="module-desc">${mod.desc}</span>
+        </div>
+      `;
+
+      label.querySelector('input').onclick = function() {
+        const active = [];
+        document.querySelectorAll('#modules-list-container input[type="checkbox"]').forEach(chk => {
+          if (chk.checked) {
+            active.push(chk.getAttribute('data-id'));
+          }
+        });
+        choices.customizerState.modules = active;
+      };
+
+      modulesContainer.appendChild(label);
+    });
+  }
+
+  function generateProduct() {
+    goToStep('loading');
+    submitEvent({
+      action: 'generate',
+      choices: choices
+    });
+  }
+
+  function generateRandom() {
+    goToStep('loading');
+    submitEvent({
+      action: 'generate',
+      choices: {
+        projectName: choices.projectName,
+        mode: 'random',
+        category: null,
+        style: null,
+        trend: null,
+        customizerState: null
+      }
+    });
+  }
+
+  /* ─── Auto-focus on load ─── */
+  setTimeout(() => nameInput.focus(), 300);
+</script>
+
+<style>
+  /* ─── PROJECT NAME INPUT ─── */
+  .name-input-group {
+    max-width: 520px;
+    margin: 0 auto 40px;
+  }
+
+  /* ─── BRAND & MODULAR CUSTOMIZER ─── */
+  .customizer-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 30px;
+    margin-bottom: 30px;
+    text-align: left;
+  }
+
+  @media (max-width: 768px) {
+    .customizer-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .customizer-section {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    backdrop-filter: blur(10px);
+  }
+
+  .customizer-section h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 20px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding-bottom: 10px;
+    color: var(--text-color);
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .customizer-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--text-color);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .customizer-input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
+  }
+
+  .color-presets {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .color-dot {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.15s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  }
+
+  .color-dot:hover {
+    transform: scale(1.15);
+  }
+
+  .color-dot.selected {
+    border-color: #fff;
+    transform: scale(1.15);
+    box-shadow: 0 0 12px var(--accent-color);
+  }
+
+  .modules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .module-checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .module-checkbox-label:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .module-checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent-color);
+    margin-top: 2px;
+    cursor: pointer;
+  }
+
+  .module-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.4;
+  }
+
+  .module-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color);
+  }
+
+  .module-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+
+  .name-field-wrapper {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 2px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.03);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .name-field-wrapper:focus-within {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.08), 0 4px 20px rgba(0, 229, 255, 0.12);
+  }
+
+  .name-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 16px 20px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-color);
+    letter-spacing: -0.2px;
+  }
+
+  .name-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.5;
+    font-weight: 400;
+  }
+
+  .btn-dice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    background: rgba(0, 229, 255, 0.08);
+    border: none;
+    border-left: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .btn-dice:hover {
+    background: rgba(0, 229, 255, 0.18);
+  }
+
+  .btn-dice:active {
+    transform: scale(0.92);
+  }
+
+  .btn-dice.rolling .dice-icon {
+    animation: diceRoll 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .dice-icon {
+    font-size: 22px;
+    display: block;
+  }
+
+  @keyframes diceRoll {
+    0%   { transform: rotate(0deg) scale(1); }
+    40%  { transform: rotate(180deg) scale(1.3); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+
+  .name-hint {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-top: 12px;
+    opacity: 0.6;
+  }
+
+  .wizard-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .wizard-step {
+    display: none;
+    animation: fadeSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .wizard-step.active {
+    display: block;
+  }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .wizard-header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .step-badge {
+    background: rgba(0, 229, 255, 0.1);
+    color: var(--accent-color);
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1px;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 34px;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+
+  .cards-grid {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 36px;
+  }
+
+  .cols-2 {
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  }
+
+  .cols-3 {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
+  .card-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+    width: fit-content;
+  }
+
+  .y2k-icon {
+    background: linear-gradient(135deg, #00bfff, #ff007f);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 5px rgba(0, 191, 255, 0.4));
+  }
+
+  .console-icon {
+    background: linear-gradient(135deg, #ff0055, #3a0ca3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+  }
+
+  .clay-icon {
+    background: linear-gradient(135deg, #ffb5a7, #fcd5ce);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .radio-icon {
+    background: linear-gradient(135deg, #ff3333, #330000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 5px rgba(255, 51, 51, 0.7));
+  }
+
+  .aero-icon {
+    background: linear-gradient(135deg, #00ff88, #00bfff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 5px rgba(0, 255, 136, 0.4));
+  }
+
+  .vapor-icon {
+    background: linear-gradient(135deg, #ff007f, #7f00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 5px rgba(255, 0, 127, 0.4));
+  }
+
+  .goth-icon {
+    background: linear-gradient(135deg, #ff0055, #00ffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 8px rgba(255, 0, 85, 0.6));
+  }
+
+  .gothic-icon {
+    color: #8a8f98;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  }
+
+  .option-card h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  .option-card p {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .wizard-footer {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  /* STEP 5: LOADING SURFACE */
+  .welcome-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    text-align: center;
+  }
+  
+  .loader-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 30px;
+  }
+
+  .loader {
+    width: 80px;
+    height: 80px;
+    border: 4px solid rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    border-top-color: var(--accent-color);
+    animation: spin 1.2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+  }
+
+  .radar-scan {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle, rgba(0, 229, 255, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.3; }
+    50% { transform: translate(-50%, -50%) scale(1.4); opacity: 0.9; }
+  }
+
+  .console-box {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px 24px;
+    text-align: left;
+    width: 100%;
+    max-width: 550px;
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+  }
+
+  .console-line {
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+</style>

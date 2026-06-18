@@ -1,0 +1,230 @@
+/* ==========================================================================
+   Create Retro-Styling UI Components Library
+   Bundles design systems for Y2K/Metro, Retro Console, Claymorphic & VFD CRT
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Y2K / FRUTIGER METRO (☄️)
+   -------------------------------------------------------------------------- */
+.y2k-gradient {
+  background: linear-gradient(135deg, #00bfff, #00f5d4, #ff007f);
+  background-size: 200% 200%;
+  animation: y2k-gradient-move 6s ease infinite;
+}
+
+@keyframes y2k-gradient-move {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.y2k-glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 191, 255, 0.15);
+}
+
+.y2k-button {
+  background: linear-gradient(to bottom, #00bfff 0%, #0077b6 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 9999px;
+  padding: 12px 28px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 191, 255, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.y2k-button::after {
+  content: "";
+  position: absolute;
+  top: 4%;
+  left: 10%;
+  width: 80%;
+  height: 40%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.6), transparent);
+  border-radius: 9999px;
+}
+
+.y2k-button:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 20px rgba(0, 191, 255, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+}
+
+.y2k-star {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-color: #ff007f;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+/* --------------------------------------------------------------------------
+   2. RETRO CONSOLE / JP 3D (🎮)
+   -------------------------------------------------------------------------- */
+.crt-scanlines {
+  position: relative;
+  overflow: hidden;
+}
+
+.crt-scanlines::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+  background-size: 100% 4px, 6px 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.pixel-border {
+  border: 4px solid #000000;
+  box-shadow: 
+    0 -4px #000000, 
+    0 4px #000000, 
+    -4px 0 #000000, 
+    4px 0 #000000,
+    6px 6px 0px rgba(255, 0, 85, 0.3);
+}
+
+.hud-panel {
+  background: #080c14;
+  border: 3px solid #ff0055;
+  color: #38b000;
+  font-family: 'Courier New', monospace;
+  padding: 16px;
+  position: relative;
+}
+
+.hud-panel::before {
+  content: 'SYSTEM LOG';
+  position: absolute;
+  top: -12px;
+  left: 16px;
+  background: #080c14;
+  padding: 0 6px;
+  color: #ff0055;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* --------------------------------------------------------------------------
+   3. CLAYMORPHIC / SOFT 3D (☁️)
+   -------------------------------------------------------------------------- */
+.clay-card {
+  background: #ffffff;
+  border-radius: 32px;
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  box-shadow: 
+    16px 16px 32px rgba(0, 0, 0, 0.08), 
+    inset -10px -10px 20px rgba(0, 0, 0, 0.06), 
+    inset 10px 10px 20px rgba(255, 255, 255, 0.9);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.clay-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    20px 20px 40px rgba(0, 0, 0, 0.12), 
+    inset -12px -12px 24px rgba(0, 0, 0, 0.08), 
+    inset 12px 12px 24px rgba(255, 255, 255, 0.95);
+}
+
+.clay-button {
+  background: #ffb5a7;
+  color: #ffffff;
+  border-radius: 20px;
+  border: none;
+  padding: 14px 28px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 
+    8px 8px 16px rgba(255, 181, 167, 0.4), 
+    inset -6px -6px 12px rgba(0, 0, 0, 0.06), 
+    inset 6px 6px 12px rgba(255, 255, 255, 0.6);
+  transition: all 0.2s ease;
+}
+
+.clay-button:hover {
+  background: #fcd5ce;
+  box-shadow: 
+    10px 10px 20px rgba(255, 181, 167, 0.6), 
+    inset -8px -8px 16px rgba(0, 0, 0, 0.08), 
+    inset 8px 8px 16px rgba(255, 255, 255, 0.7);
+  transform: translateY(-1px);
+}
+
+.clay-button:active {
+  transform: translateY(1px);
+  box-shadow: 
+    4px 4px 8px rgba(255, 181, 167, 0.4), 
+    inset -4px -4px 8px rgba(0, 0, 0, 0.08), 
+    inset 4px 4px 8px rgba(255, 255, 255, 0.7);
+}
+
+/* --------------------------------------------------------------------------
+   4. CRT RADIO / VFD GLOW (📟)
+   -------------------------------------------------------------------------- */
+.brushed-metal {
+  background-color: #1a1a1d;
+  background-image: linear-gradient(90deg, rgba(255,255,255,0.01) 50%, transparent 50%);
+  background-size: 4px 100%;
+  border: 4px solid #000000;
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -1px 0 rgba(0,0,0,0.4),
+    4px 4px 0px #000000;
+}
+
+.vfd-screen {
+  background-color: #210000;
+  border: 3px solid #000000;
+  box-shadow: inset 0 3px 10px rgba(0,0,0,0.9);
+  padding: 16px;
+  position: relative;
+}
+
+.vfd-text-red {
+  color: #ff3333;
+  font-family: 'Fira Code', monospace;
+  text-shadow: 0 0 8px rgba(255, 51, 51, 0.8), 0 0 20px rgba(255, 51, 51, 0.3);
+  font-weight: 700;
+}
+
+.vfd-text-amber {
+  color: #ffb703;
+  font-family: 'Fira Code', monospace;
+  text-shadow: 0 0 8px rgba(255, 183, 3, 0.8), 0 0 20px rgba(255, 183, 3, 0.3);
+  font-weight: 700;
+}
+
+.radio-dial {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #111;
+  border: 3px solid #000;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1);
+  position: relative;
+  cursor: pointer;
+}
+
+.radio-dial::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 12px;
+  background: #ff3333;
+  border-radius: 2px;
+}
