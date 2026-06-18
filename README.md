@@ -22,22 +22,28 @@ An advanced autonomous AI agent skill for launching interactive visual creation 
 graph TD
     A[User triggers /create] --> B[Visual Companion Server starts]
     B --> C[Interactive Wizard web UI opens]
-    C --> D[User chooses Product / Style / Trend]
-    D --> E[Antigravity Agent synthesizes files]
-    E --> F[Puppeteer captures preview]
-    F --> G[Assets packaged and delivered]
+    C --> D{Select Creation Mode}
+    D -->|Interactive Visual Wizard| E1[Select Category / Style / Trend]
+    D -->|Custom Creator Brief| E2[Fill out Journey, Goals, & Scope Brief]
+    D -->|Fully Random| E3[AI picks random trending configuration]
+    E1 --> F[Antigravity Agent synthesizes files]
+    E2 --> F
+    E3 --> F
+    F --> G[Puppeteer captures preview]
+    G --> H[Assets packaged and delivered]
     
     style A fill:#4F46E5,stroke:#312E81,stroke-width:2px,color:#fff
     style D fill:#10B981,stroke:#065F46,stroke-width:2px,color:#fff
-    style G fill:#8B5CF6,stroke:#4C1D95,stroke-width:2px,color:#fff
+    style H fill:#8B5CF6,stroke:#4C1D95,stroke-width:2px,color:#fff
 ```
 
 ## 🚀 Key Features
 
-*   **🎭 Interactive Visual Wizard**: Hosts a beautiful web interface to guide the user in selecting their digital product category, aesthetic style, and custom trend.
-*   **📡 Visual Companion Server**: A localized server (`scripts/start-server.js`) that communicates selections directly to the agent.
-*   **📸 Automatic Preview Capture**: Puppeteer-powered headless browser screen capture to ensure correct rendering and immediate visual feedback.
-*   **🧬 Flexible Template Engine**: Standardized and easily customizable HTML/CSS templates for rapid visual generation.
+*   **✍️ Custom Creator Brief**: A dedicated form mode that collects deep contextual information about the user's background, goals, the exact problems they want to solve, and the project's overall scope to synthesize a tailored solution.
+*   **🎭 Curated Visual Wizard**: An interactive visual pathway to guide users through selecting premium product vectors, design aesthetics (such as Frutiger Aero, Vaporwave, and Retro JP Console), and market trends.
+*   **📡 Visual Companion Server**: A localized server (`scripts/start-server.js`) that coordinates wizard steps and streams interaction events directly to the agent.
+*   **📸 Automatic Preview Capture**: Headless Puppeteer browser captures preview screenshots to ensure zero-latency visual validation.
+*   **🧬 Modular Design DNA**: Integrates with premium style frameworks to support easy customization and modular layout activation.
 
 ---
 
