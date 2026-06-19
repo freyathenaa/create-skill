@@ -176,7 +176,41 @@
  
     <div class="wizard-footer">
       <button class="btn-secondary" onclick="goToStep('mode')">Back</button>
-      <button id="category-next-btn" class="btn-primary" disabled onclick="goToStep('aesthetic')">Next: Aesthetic DNA</button>
+      <button id="category-next-btn" class="btn-primary" disabled onclick="goToStep('stack')">Next: Tech Stack</button>
+    </div>
+  </div>
+
+  <!-- STEP 2B: TECH STACK -->
+  <div id="step-stack" class="wizard-step">
+    <div class="wizard-header">
+      <span class="step-badge">Architecture</span>
+      <h1>Select Technology Stack</h1>
+      <p class="subtitle">Choose the foundational framework for your product.</p>
+    </div>
+
+    <div class="cards-grid cols-3">
+      <div class="option-card" onclick="selectStack('vanilla', this)">
+        <div class="card-icon">⚡</div>
+        <h3>Vanilla HTML/JS + PWA</h3>
+        <p>Zero-bloat, lightning fast. Best for simple landing pages, blogs, and interactive prototypes. Instantly installable.</p>
+      </div>
+
+      <div class="option-card" onclick="selectStack('react', this)">
+        <div class="card-icon">⚛️</div>
+        <h3>React (Vite)</h3>
+        <p>Modern component-based architecture. Best for interactive dashboards, SaaS portals, and complex web apps.</p>
+      </div>
+
+      <div class="option-card" onclick="selectStack('nextjs', this)">
+        <div class="card-icon">▲</div>
+        <h3>Next.js</h3>
+        <p>Production-ready framework with Server-Side Rendering (SSR). Best for SEO, e-commerce, and full-stack apps.</p>
+      </div>
+    </div>
+ 
+    <div class="wizard-footer">
+      <button class="btn-secondary" onclick="goToStep('category')">Back</button>
+      <button id="stack-next-btn" class="btn-primary" disabled onclick="goToStep('aesthetic')">Next: Aesthetic DNA</button>
     </div>
   </div>
 
@@ -239,7 +273,7 @@
     </div>
  
     <div class="wizard-footer">
-      <button class="btn-secondary" onclick="goToStep('category')">Back</button>
+      <button class="btn-secondary" onclick="goToStep('stack')">Back</button>
       <button id="aesthetic-next-btn" class="btn-primary" disabled onclick="goToStep('trend')">Next: Market Trend</button>
     </div>
   </div>
@@ -403,6 +437,7 @@
     projectName: null,
     mode: null,
     category: null,
+    stack: null,
     style: null,
     trend: null,
     brief: null,
@@ -474,6 +509,16 @@
     document.querySelectorAll('#step-category .option-card').forEach(card => card.classList.remove('selected'));
     element.classList.add('selected');
     document.getElementById('category-next-btn').disabled = false;
+    
+    // Quick transition on click
+    setTimeout(() => goToStep('stack'), 150);
+  }
+
+  function selectStack(stack, element) {
+    choices.stack = stack;
+    document.querySelectorAll('#step-stack .option-card').forEach(card => card.classList.remove('selected'));
+    element.classList.add('selected');
+    document.getElementById('stack-next-btn').disabled = false;
     
     // Quick transition on click
     setTimeout(() => goToStep('aesthetic'), 150);
@@ -718,6 +763,7 @@
         projectName: choices.projectName,
         mode: 'random',
         category: null,
+        stack: null,
         style: null,
         trend: null,
         customizerState: null

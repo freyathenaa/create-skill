@@ -37,6 +37,7 @@ Capture the `screen_dir` and `state_dir` paths from the returned JSON.
 If the user invokes `/create` with **accompanying text** (i.e., a description or request follows the command), do **not** launch the wizard. Instead:
 
 1. Treat the full inline text as a **direct creator brief**.
+   *Note: If the inline text contains a URL (e.g., a GitHub repo, Notion doc, or reference site) or a local file path, you MUST use your `read_url_content` or `read_file`/`view_file` tools to ingest the content BEFORE parsing the brief.*
 2. Parse the description to extract implied context:
    - **Creator/Brand Name** — infer from any named product, brand, or project.
    - **Journey & Goals** — what the creator is trying to build and why.
@@ -44,7 +45,7 @@ If the user invokes `/create` with **accompanying text** (i.e., a description or
    - **Problem** — the audience pain point the product solves.
    - **Scope** — core features, integrations, and requirements mentioned.
 3. Use this parsed brief exactly as if the user had submitted `choices.mode = "brief"` via the wizard. Proceed directly to **Step 1b** below (Start Server, Write Showcase, Skip Wizard Interaction).
-4. Auto-select the best matching **Category**, **Style**, and **Trend** from the brief's context.
+4. Auto-select the best matching **Category**, **Stack** (e.g., vanilla, react, nextjs), **Style**, and **Trend** from the brief's context.
 
 ### Step 1b: Inline Brief — Server & Showcase Only
 
@@ -78,6 +79,7 @@ Once you are woken up by the background task completion message:
 1. Read the stdout of the completed task or view `<state_dir>/events`. You will find the JSON event bundle on the last line.
 2. Extract the choices:
    - `choices.projectName` — the user's chosen project name (always present, set via input or random generator).
+   - `choices.stack` — the requested architecture (e.g., `vanilla`, `react`, `nextjs`).
    - `choices.customizerState` — the user's branding and module configurations:
      - `brandName` — assistant name (for Jarvis), space title (for blog), or app headline (for saas).
      - `accentColor` — Hex code for custom styling overrides (e.g. `#00E5FF`). Override the accent styling variables with this.
@@ -109,21 +111,26 @@ Once you are woken up by the background task completion message:
 
 ### Step 3: Generate and Render Product
 
-Once you have the configuration variables (Project Name, Category, Style, Trend):
+Once you have the configuration variables (Project Name, Category, Stack, Style, Trend):
 
 #### Product Philosophy & Commercial Positioning
 When generating any digital product (especially if the user aims to sell it):
 1. **Solve a Real Problem**: Anchor the product copywriting, feature list, and target audience around solving a specific, high-pain customer problem (e.g. automating a slow task, providing rare educational structures, saving cost).
 2. **Create a Clear Plan**: Frame the product deliverables, roadmap, and files as a complete, step-by-step solution to that problem.
 3. **Present it as a Premium Brand**: Design beautiful typography, use cohesive color palettes (applying the `customizerState.accentColor`), write converting headlines/taglines, and present the final output with a high-fidelity landing page, pricing structures, and assets package that feels premium and ready-to-sell without compromising quality.
-4. **Align with Creator Brief**: If the user selected the `brief` mode, the generated copywriting (headlines, value propositions, features), layout elements, and deliverables MUST directly speak to and solve the user's specific audience problem and goals defined in `choices.brief`.
+4. **Bespoke AI Asset Generation**: Do not rely purely on CSS-only art or placeholders. If the product would benefit from a custom logo, hero illustration, or background texture, explicitly use your `generate_image` tool to create these bespoke assets. Save them directly into `<screen_dir>` and link them in your generated code.
+5. **Align with Creator Brief**: If the user selected the `brief` mode, the generated copywriting (headlines, value propositions, features), layout elements, and deliverables MUST directly speak to and solve the user's specific audience problem and goals defined in `choices.brief`.
 
 #### Synthesis Workflow
 1. **Use the Project Name** (`choices.projectName`) as the product brand throughout all generated content — landing page headings, ZIP folder naming, showcase title, and any copy.
 
-2. **Write Files Atomically**: To prevent the browser from reloading on an incomplete file (which displays an ugly white page), always write new HTML, CSS, or JS files to a temporary path first (e.g., `index.html.tmp`), populate the content completely, and then rename the file to its final name (e.g., `index.html`). The companion server watcher will ignore `.tmp` files and only trigger a clean refresh once the rename operation completes.
+2. **Handle Framework Initializations & PWA (`choices.stack`)**:
+   - If `choices.stack` is `react` or `nextjs`, run the appropriate scaffolding command (e.g., `npx -y create-vite@latest ./ --template react` or `npx -y create-next-app@latest ./`) inside `<screen_dir>`. Use non-interactive flags to avoid blocking prompts. Ensure your subsequent file writes (`index.jsx`, `App.jsx`, `page.tsx`) align with the framework structure.
+   - For `vanilla`, write `index.html` and assets directly to `<screen_dir>`. Always auto-generate a `manifest.json` (defining `name`, `short_name`, `start_url`, `display: "standalone"`, `theme_color` based on `accentColor`) and a basic `service-worker.js` that caches the main assets, and link them in the `<head>` of `index.html` to make the product instantly installable as a Progressive Web App (PWA).
 
-3. **Synthesize Content** using the `digital-product-creator` rules and appropriate template structures:
+3. **Write Files Atomically**: To prevent the browser from reloading on an incomplete file (which displays an ugly white page), always write new HTML, CSS, or JS files to a temporary path first (e.g., `index.html.tmp`), populate the content completely, and then rename the file to its final name (e.g., `index.html`). The companion server watcher will ignore `.tmp` files and only trigger a clean refresh once the rename operation completes.
+
+4. **Synthesize Content** using the `digital-product-creator` rules and appropriate template structures:
    - **blog**: A two-column Neocities-style personal webspace. Main section has 3-4 retro blog posts with text/ASCII dividers, a status updates/shoutbox widget, an "About the Creator" widget, custom guestbook entries, and site-rings links.
    - **saas**: A landing page blueprint, API schema, database schema, payment flow framework.
    - **course**: 5-8 modules outlining a learning experience, worksheets, slide content.
@@ -221,11 +228,16 @@ When generating any digital product (especially if the user aims to sell it):
      - An interactive preview of the layout.
      - **A prominent "Download Assets Bundle (.zip)" link/button** pointing to the generated ZIP archive served via `/api/download?file=project_assets.zip` to let the user save the source files directly from the browser!
      - **A "Request Edits & Fix Bugs" Panel**:
-       - An input text area for the user to type custom instructions (e.g., "Change the secondary color to cyan", "Fix the alignment of the camera frame").
+       - Inject a lightweight `visual-inspector.js` script into the preview window or showcase. This script should listen for `mouseover` to outline elements, and `click` to select them. When a user clicks an element, auto-fill the edit request input with the specific component's context (e.g., *"Refine the `<div class='hero-card'>`..."*).
+       - An input text area for the user to type custom instructions.
        - A "Submit Request" button.
        - A JS click handler that calls:
          `window.submitEvent({ action: "refine", instruction: document.getElementById("edit-request-input").value })`
          and displays a premium overlay or loader saying: *"AI Agent is processing your edits... please wait, page will refresh automatically."*
+     - **A "Deploy to Production" Button**:
+       - A JS click handler that calls:
+         `window.submitEvent({ action: "deploy" })`
+         and displays a loader saying: *"Deploying to production..."*
    - Write this HTML file to `<screen_dir>/06_showcase.html` (and delete `01_start.html`).
    - The user's browser will automatically refresh to show the final product layout with the ZIP download button.
 
@@ -234,6 +246,9 @@ When generating any digital product (especially if the user aims to sell it):
      `python3 /Users/heavn/.gemini/config/skills/create/scripts/await-event.py <state_dir>/events 300`
    - Stop calling tools and go idle.
    - When woken up by the watcher completion message, read `<state_dir>/events`:
+     - If the last event logged is `{"action":"deploy"}`:
+       1. Run a deployment command to deploy `<screen_dir>` to production (e.g., using `npx netlify-cli deploy --dir=. --prod` or similar, depending on what the user wants or has configured).
+       2. Reply to the user with the live production URL.
      - If the last event logged is `{"action":"refine","instruction":"..."}`:
        1. Read the `instruction` string.
        2. Read the current code files in `<screen_dir>`.
