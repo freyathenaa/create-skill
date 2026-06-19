@@ -2,9 +2,12 @@
 name: create
 description: >-
   Triggered when the user invokes /create or asks to randomly create something.
-  Launches a Visual Companion Server to guide the user through a trend-informed
-  visual curation wizard, or goes fully random, synthesizing digital products and
-  landing pages using your digital-product-creator and taste-this styles.
+  If the user writes /create followed by a description or request (e.g. "/create an IDE
+  that manages token usage"), treat the text as an inline brief and generate the product
+  directly without launching the wizard. For a plain /create invocation, launches the
+  Visual Companion Server to guide the user through a trend-informed visual curation
+  wizard, or goes fully random, synthesizing digital products and landing pages using
+  your digital-product-creator and taste-this styles.
 ---
 
 # Visual Creator Skill ("Create")
@@ -29,9 +32,33 @@ Capture the `screen_dir` and `state_dir` paths from the returned JSON.
 
 ---
 
+## Inline Brief Mode (Skips Wizard)
+
+If the user invokes `/create` with **accompanying text** (i.e., a description or request follows the command), do **not** launch the wizard. Instead:
+
+1. Treat the full inline text as a **direct creator brief**.
+2. Parse the description to extract implied context:
+   - **Creator/Brand Name** — infer from any named product, brand, or project.
+   - **Journey & Goals** — what the creator is trying to build and why.
+   - **Creation** — the specific product, tool, or offering being described.
+   - **Problem** — the audience pain point the product solves.
+   - **Scope** — core features, integrations, and requirements mentioned.
+3. Use this parsed brief exactly as if the user had submitted `choices.mode = "brief"` via the wizard. Proceed directly to **Step 1b** below (Start Server, Write Showcase, Skip Wizard Interaction).
+4. Auto-select the best matching **Category**, **Style**, and **Trend** from the brief's context.
+
+### Step 1b: Inline Brief — Server & Showcase Only
+
+1. Run the server startup command:
+   `node /Users/heavn/.gemini/config/skills/create/scripts/start-server.js --project-dir /Users/heavn/.gemini/antigravity/scratch --open`
+2. Parse `screen_dir` and `state_dir` from the returned JSON.
+3. Inform the user: *"Your brief has been received. Generating your product now — no wizard needed."*
+4. Skip copying `01_start.html` and waiting for wizard events. Jump directly to **Step 3: Generate and Render Product** using the inline-parsed brief as `choices.brief`.
+
+---
+
 ## Workflow & Event Loop
 
-When this skill is triggered, execute the following state machine step-by-step:
+When this skill is triggered **without inline text**, execute the following state machine step-by-step:
 
 ### Step 1: Start the Visual Companion Server & Wait for Wizard
 1. Run the server startup command using `node`:
