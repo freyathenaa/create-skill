@@ -1,17 +1,7 @@
 <div align="center">
 
-<br/>
-
-```
-  ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗
- ██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔════╝
- ██║     ██████╔╝█████╗  ███████║   ██║   █████╗  
- ██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██╔══╝  
- ╚██████╗██║  ██║███████╗██║  ██║   ██║   ███████╗
-  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝
-```
-
-### **`/create`** — Autonomous Digital Product Synthesizer
+# 🪄 create
+### **Autonomous Digital Product Synthesizer for Antigravity**
 
 *From command to product. No templates. No compromise.*
 
@@ -139,22 +129,21 @@ Each generated product is rendered in a curated visual style:
 
 ## Project Structure
 
-```
-create-skill/
-├── scripts/
-│   ├── start-server.js      ← Express visual companion web server
-│   ├── await-event.py       ← Background event watcher (agent sync)
-│   └── capture-screen.js    ← Puppeteer headless screenshot capture
-├── templates/
-│   ├── 01_start.html        ← Interactive wizard UI
-│   ├── jarvis-template.html ← Holographic Jarvis panel template
-│   ├── jarvis-template.css  ← Jarvis styling tokens
-│   ├── ide-template.html    ← Agent IDE workspace template
-│   └── ide-template.css     ← IDE styling tokens
-├── SKILL.md                 ← Agent behavior instructions & workflow
-├── package.json
-└── README.md
-```
+The project is structured as follows:
+
+| Path | Description |
+| :--- | :--- |
+| **`SKILL.md`** | System prompts, instructions, and integration workflow for the Antigravity agent |
+| **`scripts/start-server.js`** | Express-based web server hosting the interactive companion wizard |
+| **`scripts/await-event.py`** | Python script coordinating background event watching and synchronization |
+| **`scripts/capture-screen.js`** | Puppeteer automation script for headless browser screenshots and visual QA |
+| **`templates/01_start.html`** | HTML base template for the visual wizard dashboard |
+| **`templates/jarvis-template.html`** | Holographic base layout for generated Jarvis panels |
+| **`templates/jarvis-template.css`** | Aesthetic and style tokens for Jarvis panels |
+| **`templates/ide-template.html`** | HTML template for generated IDE developer workspaces |
+| **`templates/ide-template.css`** | Layout and aesthetic styles for the IDE workspaces |
+| **`package.json`** | Project metadata and dependency configuration |
+| **`README.md`** | Documentation and setup guide |
 
 ---
 
@@ -185,13 +174,8 @@ npm install
 
 This skill runs as part of the [Antigravity AI](https://github.com/freyathenaa) agent system. Drop the `create/` folder into your Antigravity skills directory and the `/create` slash command becomes immediately available.
 
-```
-~/.gemini/config/skills/
-└── create/          ← this repo
-    ├── SKILL.md
-    ├── scripts/
-    └── templates/
-```
+Ensure the repository structure is placed in your configuration folder at:
+`~/.gemini/config/skills/create/` (containing `SKILL.md`, `scripts/`, and `templates/`).
 
 The agent handles everything: server startup, wizard coordination, file generation, visual QA, and asset delivery.
 

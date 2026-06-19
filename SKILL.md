@@ -131,7 +131,7 @@ When generating any digital product (especially if the user aims to sell it):
 3. **Write Files Atomically**: To prevent the browser from reloading on an incomplete file (which displays an ugly white page), always write new HTML, CSS, or JS files to a temporary path first (e.g., `index.html.tmp`), populate the content completely, and then rename the file to its final name (e.g., `index.html`). The companion server watcher will ignore `.tmp` files and only trigger a clean refresh once the rename operation completes.
 
 4. **Synthesize Content** using the `digital-product-creator` rules and appropriate template structures:
-   - **blog**: A two-column Neocities-style personal webspace. Main section has 3-4 retro blog posts with text/ASCII dividers, a status updates/shoutbox widget, an "About the Creator" widget, custom guestbook entries, and site-rings links.
+   - **blog**: A two-column Neocities-style personal webspace. Main section has 3-4 retro blog posts with text-based separators, a status updates/shoutbox widget, an "About the Creator" widget, custom guestbook entries, and site-rings links.
    - **saas**: A landing page blueprint, API schema, database schema, payment flow framework.
    - **course**: 5-8 modules outlining a learning experience, worksheets, slide content.
    - **ebook**: Chapter guides, conversion funnel, introductory hook.
@@ -172,7 +172,7 @@ When generating any digital product (especially if the user aims to sell it):
      - Borders: Clean translucent borders (`border: 1px solid rgba(255,255,255,0.4)`).
    - **retro-console** (Japanese 3D / burgeritchi):
      - Background: Dark slate/navy console background (`#080c14`).
-     - Layout: Isometric layout borders, retro 90s console gaming HUD, thick gaming frames, ASCII art headers, retro status bars.
+     - Layout: Isometric layout borders, retro 90s console gaming HUD, thick gaming frames, styled text headers, retro status bars.
      - Fonts: Monospace (`Fira Code`, `Courier New`) or pixelated look.
      - Filters: Grid overlays and CRT scanline styling (`background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06))`).
    - **claymorphic** (Tactile Clay / infini):
