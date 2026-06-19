@@ -47,6 +47,18 @@ graph TD
 
 ---
 
+## 💎 Branding & Design DNA
+
+`Create` implements a custom-tailored, minimal visual system designed to reflect premium studio aesthetics:
+
+- **Dual-Frame Monogram Emblem**: An overlapping wireframe monogram representing visual framing and creation.
+- **Obsidian Dark Mode**: Absolute black/deep carbon backdrops (`#070709` and `#0e0f12`) optimized for clarity and focus.
+- **Champagne Gold Accents**: High-end luxury gold detailing (`#c4a482`) used for focus states, selected borders, and status highlights.
+- **Typography & Grid**: Editorial layout using tracked uppercase headers with Outfit sans-serif fonts, paired with clean typography.
+- **Sleek Component Geometries**: Zero-curvature or tight corners (`border-radius: 4px`) with minimal borders (`#1a1b22`) and clean frosted-glass structures.
+
+---
+
 ## 📂 Project Architecture
 
 ```
