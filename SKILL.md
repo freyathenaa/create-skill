@@ -234,10 +234,10 @@ When generating any digital product (especially if the user aims to sell it):
        - A JS click handler that calls:
          `window.submitEvent({ action: "refine", instruction: document.getElementById("edit-request-input").value })`
          and displays a premium overlay or loader saying: *"AI Agent is processing your edits... please wait, page will refresh automatically."*
-     - **A "Deploy to Production" Button**:
+     - **A "Build with Claude Code" Button**:
        - A JS click handler that calls:
          `window.submitEvent({ action: "deploy" })`
-         and displays a loader saying: *"Deploying to production..."*
+         and displays a loader saying: *"Generating Claude Code Prompts..."*
    - Write this HTML file to `<screen_dir>/06_showcase.html` (and delete `01_start.html`).
    - The user's browser will automatically refresh to show the final product layout with the ZIP download button.
 
@@ -247,8 +247,8 @@ When generating any digital product (especially if the user aims to sell it):
    - Stop calling tools and go idle.
    - When woken up by the watcher completion message, read `<state_dir>/events`:
      - If the last event logged is `{"action":"deploy"}`:
-       1. Run a deployment command to deploy `<screen_dir>` to production (e.g., using `npx netlify-cli deploy --dir=. --prod` or similar, depending on what the user wants or has configured).
-       2. Reply to the user with the live production URL.
+       1. Reply to the user with a tailored markdown prompt that they can copy and paste into Claude Code. This prompt should instruct Claude to initialize the project, read the generated UI layouts, design tokens, and components from `<screen_dir>`, and scaffold out the full interactive application using the selected `choices.stack`.
+       2. Do NOT run any deployment CLI commands yourself.
      - If the last event logged is `{"action":"refine","instruction":"..."}`:
        1. Read the `instruction` string.
        2. Read the current code files in `<screen_dir>`.
