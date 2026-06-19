@@ -1,123 +1,210 @@
 <div align="center">
-  <img src="https://img.shields.io/badge/Antigravity-Create%20Skill-blueviolet?style=for-the-badge&logo=google-cloud" alt="Antigravity Create Skill Banner" />
 
-  # ✨ Antigravity: Create Skill
-  **Autonomous Visual Wizard & Digital Product Synthesizer**
+<br/>
 
-  [![GitHub license](https://img.shields.io/github/license/freyathenaa/create-skill?style=flat-square&color=8A2BE2)](https://github.com/freyathenaa/create-skill/blob/main/LICENSE)
-  [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen?style=flat-square)](https://nodejs.org)
-  [![Python Version](https://img.shields.io/badge/python-3.x-blue?style=flat-square)](https://python.org)
-  [![Puppeteer](https://img.shields.io/badge/puppeteer-latest-orange?style=flat-square)](https://pptr.dev)
-
-  ---
-</div>
-
-An advanced autonomous AI agent skill for launching interactive visual creation wizards, guiding design selections, and dynamically synthesizing premium digital products and landing pages using trend-informed design systems.
-
----
-
-## 🎨 Visual Workflow
-
-```mermaid
-graph TD
-    A[User triggers /create] --> B[Visual Companion Server starts]
-    B --> C[Interactive Wizard web UI opens]
-    C --> D{Select Creation Mode}
-    D -->|Interactive Visual Wizard| E1[Select Category / Style / Trend]
-    D -->|Custom Creator Brief| E2[Fill out Journey, Goals, & Scope Brief]
-    D -->|Fully Random| E3[AI picks random trending configuration]
-    E1 --> F[Antigravity Agent synthesizes files]
-    E2 --> F
-    E3 --> F
-    F --> G[Puppeteer captures preview]
-    G --> H[Assets packaged and delivered]
-    
-    style A fill:#4F46E5,stroke:#312E81,stroke-width:2px,color:#fff
-    style D fill:#10B981,stroke:#065F46,stroke-width:2px,color:#fff
-    style H fill:#8B5CF6,stroke:#4C1D95,stroke-width:2px,color:#fff
+```
+  ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗
+ ██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔════╝
+ ██║     ██████╔╝█████╗  ███████║   ██║   █████╗  
+ ██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██╔══╝  
+ ╚██████╗██║  ██║███████╗██║  ██║   ██║   ███████╗
+  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝
 ```
 
-## 🚀 Key Features
+### **`/create`** — Autonomous Digital Product Synthesizer
 
-*   **✍️ Custom Creator Brief**: A dedicated form mode that collects deep contextual information about the user's background, goals, the exact problems they want to solve, and the project's overall scope to synthesize a tailored solution.
-*   **🎭 Curated Visual Wizard**: An interactive visual pathway to guide users through selecting premium product vectors, design aesthetics (such as Frutiger Aero, Vaporwave, and Retro JP Console), and market trends.
-*   **📡 Visual Companion Server**: A localized server (`scripts/start-server.js`) that coordinates wizard steps and streams interaction events directly to the agent.
-*   **📸 Automatic Preview Capture**: Headless Puppeteer browser captures preview screenshots to ensure zero-latency visual validation.
-*   **🧬 Modular Design DNA**: Integrates with premium style frameworks to support easy customization and modular layout activation.
+*From command to product. No templates. No compromise.*
 
----
+<br/>
 
-## 💎 Branding & Design DNA
+[![Version](https://img.shields.io/badge/skill-v2.0-c4a482?style=for-the-badge&labelColor=070709)](https://github.com/freyathenaa/create-skill)&nbsp;
+[![Antigravity](https://img.shields.io/badge/Powered%20By-Antigravity%20AI-8B5CF6?style=for-the-badge&labelColor=070709)](https://github.com/freyathenaa)&nbsp;
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-4ade80?style=for-the-badge&labelColor=070709)](https://nodejs.org)&nbsp;
+[![Python](https://img.shields.io/badge/Python-3.x-60a5fa?style=for-the-badge&labelColor=070709)](https://python.org)
 
-`Create` implements a custom-tailored, minimal visual system designed to reflect premium studio aesthetics:
-
-- **Dual-Frame Monogram Emblem**: An overlapping wireframe monogram representing visual framing and creation.
-- **Obsidian Dark Mode**: Absolute black/deep carbon backdrops (`#070709` and `#0e0f12`) optimized for clarity and focus.
-- **Champagne Gold Accents**: High-end luxury gold detailing (`#c4a482`) used for focus states, selected borders, and status highlights.
-- **Typography & Grid**: Editorial layout using tracked uppercase headers with Outfit sans-serif fonts, paired with clean typography.
-- **Sleek Component Geometries**: Zero-curvature or tight corners (`border-radius: 4px`) with minimal borders (`#1a1b22`) and clean frosted-glass structures.
+<br/>
 
 ---
 
-## 📂 Project Architecture
+</div>
+
+## What Is This?
+
+`/create` is an Antigravity agent skill that turns a single command into a complete, premium digital product — landing pages, IDEs, SaaS interfaces, courses, dashboards, Jarvis AI panels, games, and more.
+
+It operates in two modes:
+
+| Mode | How to trigger | What happens |
+|:---|:---|:---|
+| **Inline Brief** | `/create an IDE that manages token usage...` | Skips the wizard entirely. Your description is parsed as a brief and synthesized immediately into a product. |
+| **Visual Wizard** | `/create` | Launches an interactive visual companion in your browser. You select the product type, aesthetic, and market trend — the agent builds the rest. |
+
+---
+
+## Invocation Examples
+
+```bash
+# Inline mode — no wizard, direct generation
+/create an IDE that assists in managing token usage. Users can manage a
+system prompt, configure individual agent instructions, set the number of
+agents, and log in to existing providers.
+
+# Wizard mode — opens interactive browser UI
+/create
+```
+
+When using inline mode, the agent automatically:
+- Parses your description into a **creator brief** (brand name, goals, problem, scope)
+- Selects the best matching **category**, **design style**, and **market trend**
+- Generates files, zips deliverables, runs a visual QA check, and presents a showcase
+
+---
+
+## Workflow
+
+```mermaid
+flowchart TD
+    A(["/create &lt;text&gt;"]) -->|Inline Brief| B[Parse brief from description]
+    A2(["/create"]) -->|Plain invoke| C[Start Visual Companion Server]
+
+    B --> D[Auto-select Category · Style · Trend]
+    C --> E[Open Wizard in browser]
+
+    E --> F{Mode selection}
+    F -->|Interactive Wizard| G[Pick Category / Style / Trend]
+    F -->|Custom Creator Brief| H[Fill in goals · problem · scope]
+    F -->|Fully Random| I[AI picks trending config]
+
+    D --> J
+    G --> J
+    H --> J
+    I --> J
+
+    J[Synthesize product files] --> K[Visual QA — Puppeteer capture]
+    K --> L[Package ZIP deliverables]
+    L --> M([Showcase + Download page])
+
+    style A fill:#c4a482,color:#000,stroke:none
+    style A2 fill:#8B5CF6,color:#fff,stroke:none
+    style M fill:#10B981,color:#fff,stroke:none
+    style J fill:#1e1f2e,color:#c4a482,stroke:#c4a482
+```
+
+---
+
+## Product Categories
+
+The agent can generate any of the following product types:
+
+| Category | Description |
+|:---|:---|
+| `saas` | Landing page, API schema, database schema, payment flow |
+| `blog` | Neocities-style personal webspace with retro UI |
+| `course` | 5–8 module learning experience with worksheets |
+| `ebook` | Chapter guides, conversion funnel, introductory hook |
+| `dashboard` | Responsive telemetry grids and data visualization |
+| `plugin` | Chrome Extension MV3, VS Code config, or Figma plugin |
+| `game` | HTML Canvas arcade, WebGL shader, or text adventure |
+| `planner` | Content calendars, marketing workflows, product pipelines |
+| `wellness` | Nutrition schedulers, fitness splits, mindfulness loops |
+| `jarvis` | Holographic browser-based AI control panel |
+| `ide` | Interactive browser-based multi-agent developer workspace |
+
+---
+
+## Design Aesthetics
+
+Each generated product is rendered in a curated visual style:
+
+<table>
+<tr>
+<td><strong>y2k</strong> — Frutiger Metro · Web 2.0 Gloss</td>
+<td><strong>retro-console</strong> — Japanese 3D · Gaming HUD</td>
+</tr>
+<tr>
+<td><strong>claymorphic</strong> — Tactile Clay · Inflated Shapes</td>
+<td><strong>crt-radio</strong> — VFD Screen · Post-Apocalyptic</td>
+</tr>
+<tr>
+<td><strong>frutiger-aero</strong> — Glossy Aqua · Skeuomorphism</td>
+<td><strong>vaporwave</strong> — 90s Glitch · Retrowave Lounge</td>
+</tr>
+<tr>
+<td><strong>cyber-goth</strong> — Neon Obsidian · Circuit Grid</td>
+<td><strong>gothic-grunge</strong> — Medieval Parchment · Ink Splatter</td>
+</tr>
+</table>
+
+---
+
+## Project Structure
 
 ```
 create-skill/
-├── 📁 scripts/
-│   ├── 📄 start-server.js     # Express-based visual companion web server
-│   ├── 📄 await-event.py      # Background event watcher and sync script
-│   └── 📄 capture-screen.js   # Puppeteer screenshot automated capturing
-├── 📁 templates/
-│   ├── 📄 01_start.html       # Visual Wizard initial launch UI template
-│   └── 📄 retro-components.css# Styled visual tokens for the wizard
-├── 📄 SKILL.md                # System prompts & Agent behavior instructions
-├── 📄 package.json            # Node project configuration
-└── 📄 README.md               # Visual branding and usage documentation
+├── scripts/
+│   ├── start-server.js      ← Express visual companion web server
+│   ├── await-event.py       ← Background event watcher (agent sync)
+│   └── capture-screen.js    ← Puppeteer headless screenshot capture
+├── templates/
+│   ├── 01_start.html        ← Interactive wizard UI
+│   ├── jarvis-template.html ← Holographic Jarvis panel template
+│   ├── jarvis-template.css  ← Jarvis styling tokens
+│   ├── ide-template.html    ← Agent IDE workspace template
+│   └── ide-template.css     ← IDE styling tokens
+├── SKILL.md                 ← Agent behavior instructions & workflow
+├── package.json
+└── README.md
 ```
-
-### Technical Stack Details
-
-| Component | Technology | Role / Purpose |
-| :--- | :--- | :--- |
-| **Server** | Node.js + Express | Host the interaction pages and receive event payloads |
-| **Automation** | Puppeteer | Launch headless Chromium to capture high-fidelity screenshot assets |
-| **Sync Engine** | Python 3 | Background listener to block/unblock the agent based on user inputs |
-| **Styling** | Vanilla CSS | Premium visual layout using custom design tokens |
 
 ---
 
-## 🛠 Setup & Installation
+## Stack
 
-### 1. Prerequisites
-- **Node.js** (v18.0.0 or higher)
-- **Python** (v3.x or higher)
+| Layer | Technology | Purpose |
+|:---|:---|:---|
+| **Server** | Node.js + Express | Hosts wizard pages, receives event payloads |
+| **Event Sync** | Python 3 | Blocks/unblocks agent on user wizard input |
+| **Visual QA** | Puppeteer (Chromium) | Headless screenshot capture for styling validation |
+| **Styling** | Vanilla CSS | Premium design tokens, no framework dependencies |
 
-### 2. Install Dependencies
-Clone the repository and install the required Node packages:
+---
+
+## Installation
+
 ```bash
 git clone git@github.com:freyathenaa/create-skill.git
 cd create-skill
 npm install
 ```
 
+**Requirements:** Node.js ≥ 18, Python 3.x
+
 ---
 
-## 💻 Running the Wizard
+## Integration with Antigravity
 
-To spin up the visual companion server:
+This skill runs as part of the [Antigravity AI](https://github.com/freyathenaa) agent system. Drop the `create/` folder into your Antigravity skills directory and the `/create` slash command becomes immediately available.
 
-```bash
-node scripts/start-server.js
+```
+~/.gemini/config/skills/
+└── create/          ← this repo
+    ├── SKILL.md
+    ├── scripts/
+    └── templates/
 ```
 
-The server will initialize on port `3000` (or the configured environment port) and wait for the agent-assisted configuration events.
+The agent handles everything: server startup, wizard coordination, file generation, visual QA, and asset delivery.
 
 ---
 
-## ⚡ Integration with Antigravity
+<div align="center">
 
-This skill is designed to run seamlessly with the **Antigravity AI Agent SDK**. When a user issues the `/create` slash command:
-1. The agent starts the server.
-2. The agent opens the browser/companion UI.
-3. The user picks their custom styling configuration.
-4. The agent reads the choices, builds the landing page using premium styling rules, and generates screenshots.
+<br/>
+
+*Built for creators who ship.*
+
+[![freyathenaa](https://img.shields.io/badge/github-freyathenaa-c4a482?style=flat-square&logo=github&labelColor=070709)](https://github.com/freyathenaa)
+
+<br/>
+
+</div>
