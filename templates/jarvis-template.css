@@ -1,0 +1,391 @@
+:root {
+  --bg-color: #05070a;
+  --panel-bg: rgba(6, 11, 19, 0.55);
+  --border-color: rgba(0, 229, 255, 0.15);
+  --accent-color: #00e5ff;
+  --accent-glow: rgba(0, 229, 255, 0.35);
+  --text-main: #e2f3f5;
+  --text-muted: #628395;
+  --font-mono: 'Fira Code', 'Courier New', monospace;
+  --font-sans: 'Outfit', 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+  background-image: 
+    linear-gradient(rgba(18, 24, 38, 0.05) 50%, rgba(0, 0, 0, 0.3) 50%),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(rgba(0, 229, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 4px, 30px 30px, 30px 30px;
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── GRID LAYOUT ─── */
+.hud-container {
+  display: grid;
+  grid-template-columns: 320px 1fr 340px;
+  grid-template-rows: 60px 1fr 50px;
+  height: 100vh;
+  width: 100vw;
+  padding: 10px;
+  gap: 15px;
+}
+
+/* Header */
+.hud-header {
+  grid-column: 1 / -1;
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  box-shadow: 0 0 15px var(--border-color);
+  backdrop-filter: blur(10px);
+}
+
+.hud-title {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: 2px;
+  color: var(--text-main);
+  text-shadow: 0 0 8px var(--accent-glow);
+}
+
+.hud-status {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent-color);
+}
+
+.hud-status-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent-color);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--accent-color);
+  animation: pulse 1.5s infinite;
+}
+
+/* Columns */
+.hud-col {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.hud-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset 0 0 15px rgba(0, 229, 255, 0.03);
+  backdrop-filter: blur(10px);
+}
+
+.hud-panel-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 15px;
+  color: var(--text-muted);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+  padding-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Center Column */
+.hud-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  border: 1px solid rgba(0, 229, 255, 0.05);
+  border-radius: 8px;
+  background: rgba(0,0,0,0.2);
+}
+
+/* Footer */
+.hud-footer {
+  grid-column: 1 / -1;
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  backdrop-filter: blur(10px);
+}
+
+/* ─── HUD WIDGETS ─── */
+
+/* Pulsing Arc Reactor / Voice Visualizer */
+.reactor-container {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.reactor-ring-outer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 3px dashed var(--accent-color);
+  border-radius: 50%;
+  opacity: 0.25;
+  animation: spin-clockwise 25s linear infinite;
+}
+
+.reactor-ring-middle {
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  border: 2px solid var(--accent-color);
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: spin-counter 15s linear infinite;
+}
+
+.reactor-ring-inner {
+  position: absolute;
+  width: 60%;
+  height: 60%;
+  border: 2px dashed var(--accent-color);
+  border-radius: 50%;
+  opacity: 0.7;
+  animation: spin-clockwise 8s linear infinite;
+}
+
+.reactor-core {
+  position: absolute;
+  width: 40%;
+  height: 40%;
+  background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 30px var(--accent-color), inset 0 0 15px var(--accent-color);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reactor-container.listening .reactor-core {
+  animation: heartbeat 0.8s ease-in-out infinite;
+  box-shadow: 0 0 50px var(--accent-color), inset 0 0 20px var(--accent-color);
+}
+
+.reactor-container.speaking .reactor-core {
+  animation: voiceWave 0.5s ease-in-out infinite;
+}
+
+/* Telemetry Stats */
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.telemetry-item {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 229, 255, 0.08);
+  border-radius: 6px;
+  padding: 10px;
+  font-family: var(--font-mono);
+}
+
+.telemetry-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.telemetry-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--accent-color);
+  margin-top: 4px;
+  text-shadow: 0 0 6px var(--accent-glow);
+}
+
+/* Terminal Console */
+.terminal-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px 12px;
+  margin-top: auto;
+}
+
+.terminal-prompt {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent-color);
+  margin-right: 8px;
+}
+
+.terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-main);
+}
+
+.terminal-logs {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  overflow-y: auto;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.log-entry.command {
+  color: var(--text-main);
+}
+
+.log-entry.response {
+  color: var(--accent-color);
+}
+
+/* Camera Viewport */
+.camera-container {
+  width: 100%;
+  height: 180px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  background: #000;
+}
+
+.camera-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* mirror */
+  display: none;
+}
+
+.camera-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.camera-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  width: 80%;
+}
+
+.camera-btn {
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
+  padding: 6px 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.2s;
+}
+
+.camera-btn:hover {
+  background: var(--accent-color);
+  color: #000;
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes spin-clockwise {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spin-counter {
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes voiceWave {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+/* Interactive Cursor */
+.glowing-cursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--accent-color);
+  border-radius: 50%;
+  background: rgba(0, 229, 255, 0.15);
+  box-shadow: 0 0 10px var(--accent-color);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.1s ease, height 0.1s ease, background-color 0.1s ease;
+  display: none;
+}
+
+.glowing-cursor.clicking {
+  width: 14px;
+  height: 14px;
+  background-color: var(--accent-color);
+  box-shadow: 0 0 20px var(--accent-color);
+}

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{PROJECT_NAME}} - Sci-Fi HUD</title>
+  <!-- Google Fonts & Style Overrides -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Outfit:wght@400;600;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  
+  <!-- MediaPipe Hands & Camera Utils (Dynamic Loader CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* Injected Styling Variables */
+    :root {
+      --accent-color: {{ACCENT_COLOR}};
+      --accent-glow: {{ACCENT_GLOW}};
+    }
+  </style>
+  <link rel="stylesheet" href="jarvis-template.css">
+</head>
+<body>
+
+  <!-- Glowing Virtual Cursor (Gesture Controlled) -->
+  <div class="glowing-cursor" id="glowing-cursor"></div>
+
+  <!-- Main HUD Grid -->
+  <div class="hud-container">
+    
+    <!-- HEADER -->
+    <header class="hud-header">
+      <div class="hud-title">{{PROJECT_NAME}} HUD</div>
+      <div class="hud-status">
+        <span class="hud-status-dot"></span>
+        SYSTEM STATUS: ONLINE
+      </div>
+    </header>
+
+    <!-- LEFT COLUMN -->
+    <div class="hud-col">
+      <!-- Voice Assistant Panel -->
+      <div class="hud-panel" style="flex: 1.2;">
+        <div class="hud-panel-title">
+          <span>AI ASSISTANT: {{ASSISTANT_NAME}}</span>
+          <span>VOICE ON</span>
+        </div>
+        
+        <div class="reactor-container" id="reactor-container" onclick="toggleListening()" title="Click to manually trigger voice command">
+          <div class="reactor-ring-outer"></div>
+          <div class="reactor-ring-middle"></div>
+          <div class="reactor-ring-inner"></div>
+          <div class="reactor-core"></div>
+        </div>
+
+        <div class="terminal-logs" id="voice-logs">
+          <div class="log-entry">> Click reactor core or say "{{ASSISTANT_NAME}}, wake up" to begin...</div>
+        </div>
+      </div>
+
+      <!-- Quick Launch Apps Panel -->
+      <div class="hud-panel" style="flex: 0.8;">
+        <div class="hud-panel-title">SYSTEM APP LAUNCHER</div>
+        <div class="telemetry-grid">
+          <div class="telemetry-item" style="cursor: pointer;" onclick="openApp('Google')">
+            <div class="telemetry-label">Browser</div>
+            <div class="telemetry-value" style="font-size: 13px;">Google Search</div>
+          </div>
+          <div class="telemetry-item" style="cursor: pointer;" onclick="openApp('YouTube')">
+            <div class="telemetry-label">Media</div>
+            <div class="telemetry-value" style="font-size: 13px;">YouTube stream</div>
+          </div>
+          <div class="telemetry-item" style="cursor: pointer;" onclick="openApp('GitHub')">
+            <div class="telemetry-label">Code Repository</div>
+            <div class="telemetry-value" style="font-size: 13px;">GitHub workspace</div>
+          </div>
+          <div class="telemetry-item" style="cursor: pointer;" onclick="openApp('Terminal')">
+            <div class="telemetry-label">Telemetry Console</div>
+            <div class="telemetry-value" style="font-size: 13px;">Diagnostic Shell</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER COLUMN: TARGET VIEWPORT / STARS -->
+    <div class="hud-center" id="hud-center">
+      <!-- Background Particle Star Map Canvas (optional layout) -->
+      <canvas id="star-map-canvas" style="position: absolute; width: 100%; height: 100%; pointer-events: none; opacity: 0.15;"></canvas>
+
+      <div style="text-align: center; z-index: 5;">
+        <div class="hud-title" style="font-size: 24px; margin-bottom: 5px;">{{ASSISTANT_NAME}} MAINFRAME v1.0</div>
+        <p style="color: var(--text-muted); font-size: 12px; font-family: var(--font-mono);">AWAITING DIRECTIVES | TARGET LOCK ENGAGED</p>
+      </div>
+
+      <!-- Holographic Target Grid Decoration -->
+      <div style="position: absolute; width: 85%; height: 85%; border: 1px solid rgba(0, 229, 255, 0.05); border-radius: 50%; pointer-events: none; border-style: dashed;"></div>
+      <div style="position: absolute; width: 50%; height: 50%; border: 1px solid rgba(0, 229, 255, 0.03); border-radius: 50%; pointer-events: none;"></div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="hud-col">
+      <!-- Target gesture Camera feeds -->
+      <div class="hud-panel" style="flex: 1.1;">
+        <div class="hud-panel-title">GESTURE VIEWPORT & FEED</div>
+        <div class="camera-container">
+          <video class="camera-feed" id="webcam" autoplay playsinline></video>
+          <canvas class="camera-canvas" id="canvas-overlay"></canvas>
+          
+          <div class="camera-placeholder" id="camera-placeholder">
+            <span style="font-size: 24px; display: block; margin-bottom: 8px;">📷</span>
+            <span>Camera gesture feed is currently offline. Enable access below.</span>
+            <br/>
+            <button class="camera-btn" onclick="startWebcam()">Initialize Video</button>
+          </div>
+        </div>
+        <div style="font-size: 10px; color: var(--text-muted); margin-top: 10px; font-family: var(--font-mono); line-height: 1.4;">
+          > Move open hand to control cursor.<br/>
+          > Ball fist to perform click & select.<br/>
+          > Pinch fingers to zoom layout modules.
+        </div>
+      </div>
+
+      <!-- Telemetry Diagnostics Panel -->
+      <div class="hud-panel" style="flex: 0.9;">
+        <div class="hud-panel-title">DIAGNOSTIC TELEMETRY</div>
+        <div class="telemetry-grid">
+          <div class="telemetry-item">
+            <div class="telemetry-label">CPU Load</div>
+            <div class="telemetry-value" id="cpu-load-val">24.5%</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telemetry-label">RAM Usage</div>
+            <div class="telemetry-value" id="ram-usage-val">32%</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telemetry-label">Sensor Temp</div>
+            <div class="telemetry-value" id="temp-val">42°C</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telemetry-label">Ping Latency</div>
+            <div class="telemetry-value" id="ping-val">12ms</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="hud-footer">
+      <div>MAINFRAME SECURITY METAPHOR: {{TREND_NAME}}</div>
+      <div>COORDINATES: lat 34.0522, lon -118.2437 | LOCAL TIME: <span id="clock-display">00:00:00</span></div>
+    </footer>
+
+  </div>
+
+  <!-- Dynamic Logic JavaScript -->
+  <script>
+    /* ─── WEB AUDIO SCI-FI SYNTHESIZER ─── */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    function playSound(type) {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      
+      const osc = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      osc.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      if (type === 'beep') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime); // High pitched beep
+        gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+      } else if (type === 'sweep') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.45);
+        gainNode.gain.setValueAtTime(0.06, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.45);
+      } else if (type === 'alarm') {
+        // Red Alert Klaxon
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(600, audioCtx.currentTime + 0.3);
+        osc.frequency.linearRampToValueAtTime(440, audioCtx.currentTime + 0.6);
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.6);
+      }
+    }
+
+    /* ─── VOICE RECOGNITION (Web Speech API) ─── */
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechSynthesis = window.speechSynthesis;
+    let recognition;
+    let isWakeMode = false;
+
+    function speak(text) {
+      if (!SpeechSynthesis) return;
+      // Stop current speech
+      SpeechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      // Choose a fitting robotic voice if available
+      const voices = SpeechSynthesis.getVoices();
+      const butlerVoice = voices.find(v => v.lang.includes('en-GB')) || voices[0];
+      if (butlerVoice) utterance.voice = butlerVoice;
+      
+      utterance.rate = 1.0;
+      utterance.pitch = 0.9; // Slightly lower pitch for JARVIS aesthetic
+      SpeechSynthesis.speak(utterance);
+    }
+
+    function initVoice() {
+      if (!SpeechRecognition) {
+        logVoice("Voice recognition not supported in this browser.");
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        logVoice("JARVIS: Online and listening...");
+        document.getElementById('reactor-container').classList.add('listening');
+      };
+
+      recognition.onend = () => {
+        logVoice("JARVIS: Sleeping.");
+        document.getElementById('reactor-container').classList.remove('listening');
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+        logVoice(`User: "${transcript}"`);
+        processCommand(transcript);
+      };
+
+      recognition.start();
+    }
+
+    function logVoice(text) {
+      const logs = document.getElementById('voice-logs');
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.innerHTML = `> ${text}`;
+      logs.appendChild(entry);
+      logs.scrollTop = logs.scrollHeight;
+    }
+
+    function toggleListening() {
+      playSound('beep');
+      if (recognition) {
+        recognition.stop();
+        recognition = null;
+      } else {
+        initVoice();
+      }
+    }
+
+    function processCommand(cmd) {
+      const wakeWord = "{{ASSISTANT_NAME}}".toLowerCase();
+      
+      // Check for Wake word
+      if (!cmd.includes(wakeWord) && !isWakeMode) {
+        // Must contain wake word to activate
+        return;
+      }
+
+      playSound('beep');
+      
+      // Open Camera command
+      if (cmd.includes('open camera') || cmd.includes('start camera') || cmd.includes('video')) {
+        speak("Initializing video receptors, sir.");
+        startWebcam();
+        return;
+      }
+
+      // Open apps commands
+      if (cmd.includes('open google')) {
+        speak("Opening Google search index.");
+        openApp('Google');
+        return;
+      }
+      if (cmd.includes('open youtube')) {
+        speak("Opening YouTube media stream.");
+        openApp('YouTube');
+        return;
+      }
+      if (cmd.includes('open github')) {
+        speak("Redirecting to your code vaults on GitHub.");
+        openApp('GitHub');
+        return;
+      }
+
+      // Intruder Alert Command
+      if (cmd.includes('intruder alert') || cmd.includes('danger') || cmd.includes('intruder')) {
+        triggerIntruderAlert();
+        return;
+      }
+
+      // System scan command
+      if (cmd.includes('scan') || cmd.includes('diagnostics') || cmd.includes('telemetry')) {
+        speak("Running comprehensive system diagnostics.");
+        triggerScan();
+        return;
+      }
+
+      // General fallback conversation response
+      speak(`Affirmative. Command recorded.`);
+    }
+
+    function openApp(name) {
+      playSound('sweep');
+      let url = 'https://google.com';
+      if (name === 'YouTube') url = 'https://youtube.com';
+      if (name === 'GitHub') url = 'https://github.com';
+      
+      logVoice(`Opening app: ${name}`);
+      window.open(url, '_blank');
+    }
+
+    function triggerIntruderAlert() {
+      speak("Warning! Unauthorized entity detected. Locking panels.");
+      logVoice("ALERT: INTRUDER ENCOUNTERED!");
+      playSound('alarm');
+      
+      // Flash the whole screen red and orange
+      const center = document.getElementById('hud-center');
+      center.style.backgroundColor = 'rgba(255, 0, 60, 0.25)';
+      document.documentElement.style.setProperty('--accent-color', '#ff003c');
+      document.documentElement.style.setProperty('--accent-glow', 'rgba(255,0,60,0.5)');
+      
+      setTimeout(() => {
+        center.style.backgroundColor = 'rgba(0,0,0,0.2)';
+        document.documentElement.style.setProperty('--accent-color', '{{ACCENT_COLOR}}');
+        document.documentElement.style.setProperty('--accent-glow', '{{ACCENT_GLOW}}');
+      }, 5000);
+    }
+
+    function triggerScan() {
+      let duration = 0;
+      const interval = setInterval(() => {
+        document.getElementById('cpu-load-val').innerText = (Math.random() * 80 + 10).toFixed(1) + '%';
+        document.getElementById('ram-usage-val').innerText = (Math.random() * 40 + 20).toFixed(0) + '%';
+        document.getElementById('temp-val').innerText = (Math.random() * 25 + 30).toFixed(0) + '°C';
+        document.getElementById('ping-val').innerText = (Math.random() * 40 + 5).toFixed(0) + 'ms';
+        duration += 100;
+        if (duration > 3000) {
+          clearInterval(interval);
+          speak("Diagnostic scan complete. All files nominal.");
+        }
+      }, 100);
+    }
+
+    /* ─── WEBCAM & MEDIAPIPE GESTURE HAND TRACKING ─── */
+    let videoElement;
+    let canvasOverlay;
+    let overlayCtx;
+    let handsTracker;
+    let cameraRunner;
+
+    async function startWebcam() {
+      videoElement = document.getElementById('webcam');
+      canvasOverlay = document.getElementById('canvas-overlay');
+      overlayCtx = canvasOverlay.getContext('2d');
+
+      document.getElementById('camera-placeholder').style.display = 'none';
+      videoElement.style.display = 'block';
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+        videoElement.srcObject = stream;
+        
+        // Wait until dimensions load to scale canvas
+        videoElement.onloadedmetadata = () => {
+          canvasOverlay.width = videoElement.videoWidth;
+          canvasOverlay.height = videoElement.videoHeight;
+          initHandTracking();
+        };
+      } catch (err) {
+        console.error("Failed to access webcam:", err);
+        logVoice("Webcam receptor unavailable.");
+      }
+    }
+
+    function initHandTracking() {
+      handsTracker = new Hands({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+      });
+
+      handsTracker.setOptions({
+        maxNumHands: 1,
+        modelComplexity: 1,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+      });
+
+      handsTracker.onResults(onHandResults);
+
+      cameraRunner = new Camera(videoElement, {
+        onFrame: async () => {
+          await handsTracker.send({ image: videoElement });
+        },
+        width: 640,
+        height: 480
+      });
+      cameraRunner.start();
+      logVoice("Gesture engines running successfully.");
+    }
+
+    function onHandResults(results) {
+      overlayCtx.clearRect(0, 0, canvasOverlay.width, canvasOverlay.height);
+      
+      const cursor = document.getElementById('glowing-cursor');
+
+      if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
+        cursor.style.display = 'none';
+        return;
+      }
+
+      cursor.style.display = 'block';
+      const landmarks = results.multiHandLandmarks[0];
+
+      // Draw tracking joint dots on canvas overlay
+      for (const lm of landmarks) {
+        const x = lm.x * canvasOverlay.width;
+        const y = lm.y * canvasOverlay.height;
+        overlayCtx.beginPath();
+        overlayCtx.arc(x, y, 3, 0, 2 * Math.PI);
+        overlayCtx.fillStyle = '{{ACCENT_COLOR}}';
+        overlayCtx.fill();
+      }
+
+      // Index finger tip (landmark 8)
+      const indexTip = landmarks[8];
+      
+      // Translate coordinates to screen dimensions
+      const screenX = (1 - indexTip.x) * window.innerWidth; // flip since mirrored video
+      const screenY = indexTip.y * window.innerHeight;
+
+      cursor.style.left = `${screenX}px`;
+      cursor.style.top = `${screenY}px`;
+
+      // Determine Gesture: Fist vs Open Hand
+      // A fist is detected if fingers (index, middle, ring, pinky tips) are curled towards the wrist
+      const wrist = landmarks[0];
+      const indexKnuckle = landmarks[5];
+      
+      // Simple distance heuristic: index tip to knuckles
+      const distIndex = Math.hypot(landmarks[8].x - landmarks[5].x, landmarks[8].y - landmarks[5].y);
+      const distMiddle = Math.hypot(landmarks[12].x - landmarks[9].x, landmarks[12].y - landmarks[9].y);
+      const distRing = Math.hypot(landmarks[16].x - landmarks[13].x, landmarks[16].y - landmarks[13].y);
+      const distPinky = Math.hypot(landmarks[20].x - landmarks[17].x, landmarks[20].y - landmarks[17].y);
+
+      const isFist = distIndex < 0.08 && distMiddle < 0.08 && distRing < 0.08 && distPinky < 0.08;
+
+      if (isFist) {
+        if (!cursor.classList.contains('clicking')) {
+          cursor.classList.add('clicking');
+          playSound('beep');
+          triggerClickAt(screenX, screenY);
+        }
+      } else {
+        cursor.classList.remove('clicking');
+      }
+
+      // Check Pinch Gesture (Thumb tip [4] + Index tip [8] touching)
+      const distPinch = Math.hypot(landmarks[4].x - landmarks[8].x, landmarks[4].y - landmarks[8].y);
+      if (distPinch < 0.035) {
+        // Resize or Zoom layout
+        document.getElementById('hud-center').style.transform = 'scale(1.05)';
+      } else {
+        document.getElementById('hud-center').style.transform = 'scale(1)';
+      }
+    }
+
+    function triggerClickAt(x, y) {
+      const el = document.elementFromPoint(x, y);
+      if (el) {
+        logVoice(`Gesture Click: [${el.tagName.toLowerCase()}]`);
+        el.click();
+      }
+    }
+
+    /* ─── BACKGROUND PARTICLES STAR MAP ─── */
+    const starCanvas = document.getElementById('star-map-canvas');
+    const starCtx = starCanvas.getContext('2d');
+    let stars = [];
+
+    function initStars() {
+      starCanvas.width = starCanvas.offsetWidth;
+      starCanvas.height = starCanvas.offsetHeight;
+      stars = [];
+      for (let i = 0; i < 60; i++) {
+        stars.push({
+          x: Math.random() * starCanvas.width,
+          y: Math.random() * starCanvas.height,
+          radius: Math.random() * 2,
+          speed: Math.random() * 0.5 + 0.1
+        });
+      }
+      animateStars();
+    }
+
+    function animateStars() {
+      starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+      starCtx.fillStyle = 'rgba(0, 229, 255, 0.4)';
+      for (const star of stars) {
+        starCtx.beginPath();
+        starCtx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        starCtx.fill();
+        star.y += star.speed;
+        if (star.y > starCanvas.height) {
+          star.y = 0;
+          star.x = Math.random() * starCanvas.width;
+        }
+      }
+      requestAnimationFrame(animateStars);
+    }
+
+    window.addEventListener('resize', () => {
+      starCanvas.width = starCanvas.offsetWidth;
+      starCanvas.height = starCanvas.offsetHeight;
+    });
+
+    /* ─── AUXILIARY ─── */
+    // Clock
+    setInterval(() => {
+      const d = new Date();
+      document.getElementById('clock-display').innerText = d.toLocaleTimeString();
+    }, 1000);
+
+    // Initial load
+    initStars();
+  </script>
+</body>
+</html>

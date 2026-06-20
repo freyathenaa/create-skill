@@ -51,6 +51,7 @@ const clients = [];
 
 // Helper to watch directory
 let lastSentFile = null;
+let lastSentTime = 0;
 function scanAndNotify() {
   try {
     const files = fs.readdirSync(screenDir)
@@ -60,8 +61,10 @@ function scanAndNotify() {
 
     if (files.length > 0) {
       const newest = files[0].name;
-      if (newest !== lastSentFile) {
+      const newestTime = files[0].stat.mtimeMs;
+      if (newest !== lastSentFile || newestTime > lastSentTime) {
         lastSentFile = newest;
+        lastSentTime = newestTime;
         broadcast({ type: 'new-screen', file: newest });
       }
     }
@@ -129,16 +132,7 @@ function startListening(port) {
       res.write('\n');
       clients.push(res);
       
-      // Send initial check
-      try {
-        const files = fs.readdirSync(screenDir)
-          .filter(f => f.endsWith('.html'))
-          .map(f => ({ name: f, stat: fs.statSync(path.join(screenDir, f)) }))
-          .sort((a, b) => b.stat.mtimeMs - a.stat.mtimeMs);
-        if (files.length > 0) {
-          res.write(`data: ${JSON.stringify({ type: 'new-screen', file: files[0].name })}\n\n`);
-        }
-      } catch (e) {}
+      // Client connected, wait for directory changes to broadcast
 
       req.on('close', () => {
         const index = clients.indexOf(res);
@@ -179,7 +173,9 @@ function startListening(port) {
             data.files.forEach(f => {
               const filePath = path.join(screenDir, f.name);
               if (filePath.startsWith(screenDir)) {
-                fs.writeFileSync(filePath, f.content);
+                const tempPath = filePath + '.tmp';
+                fs.writeFileSync(tempPath, f.content);
+                fs.renameSync(tempPath, filePath);
               }
             });
             // Re-run zip compression cross-platform
@@ -240,6 +236,56 @@ function startListening(port) {
         return;
       }
 
+      const ext = path.extname(filePath).toLowerCase();
+
+      // CSS serving
+      if (ext === '.css') {
+        fs.readFile(filePath, (err, content) => {
+          if (err) {
+            res.writeHead(404);
+            res.end('Not Found');
+            return;
+          }
+          res.writeHead(200, { 'Content-Type': 'text/css' });
+          res.end(content);
+        });
+        return;
+      }
+
+      // JS serving
+      if (ext === '.js') {
+        fs.readFile(filePath, (err, content) => {
+          if (err) {
+            res.writeHead(404);
+            res.end('Not Found');
+            return;
+          }
+          res.writeHead(200, { 'Content-Type': 'application/javascript' });
+          res.end(content);
+        });
+        return;
+      }
+
+      // Image serving
+      if (ext === '.png' || ext === '.jpg' || ext === '.jpeg' || ext === '.gif') {
+        fs.readFile(filePath, (err, content) => {
+          if (err) {
+            res.writeHead(404);
+            res.end('Not Found');
+            return;
+          }
+          const mimeTypes = {
+            '.png': 'image/png',
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.gif': 'image/gif'
+          };
+          res.writeHead(200, { 'Content-Type': mimeTypes[ext] || 'image/png' });
+          res.end(content);
+        });
+        return;
+      }
+
       fs.readFile(filePath, 'utf8', (err, content) => {
         if (err) {
           res.writeHead(404);
@@ -259,9 +305,26 @@ function startListening(port) {
                 const data = JSON.parse(event.data);
                 if (data.type === "new-screen") {
                   const currentFile = window.location.pathname.split('/').pop();
-                  if (currentFile !== data.file) {
-                    window.location.href = "/screens/" + data.file;
+                  if (window === window.top) {
+                    if (currentFile !== data.file) {
+                      window.location.href = "/screens/" + data.file;
+                    } else {
+                      window.location.reload();
+                    }
                   }
+                }
+              };
+              window.submitEvent = async function(eventData) {
+                try {
+                  const response = await fetch('/api/event', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(eventData)
+                  });
+                  const result = await response.json();
+                  console.log('Event submitted:', result);
+                } catch (err) {
+                  console.error('Failed to submit event:', err);
                 }
               };
             </script>
@@ -315,11 +378,11 @@ function startListening(port) {
                 text-align: center;
               }
               .loader {
-                width: 48px;
-                height: 48px;
-                border: 3px solid rgba(255, 255, 255, 0.1);
+                width: 40px;
+                height: 40px;
+                border: 2px solid rgba(255, 255, 255, 0.05);
                 border-radius: 50%;
-                border-top-color: #00e5ff;
+                border-top-color: var(--accent-color);
                 animation: spin 1s ease-in-out infinite;
                 margin-bottom: 24px;
               }
@@ -392,16 +455,20 @@ function getFramedPage(innerContent) {
   <title>Create</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #0b0c10;
-      --panel-dark: rgba(26, 26, 36, 0.45);
-      --border-color: rgba(255, 255, 255, 0.08);
-      --accent-color: #00e5ff;
-      --accent-glow: rgba(0, 229, 255, 0.25);
-      --text-main: #f5f6f7;
-      --text-muted: #8a8f98;
+      --bg-dark: #000000;
+      --bg-color: #000000;
+      --panel-dark: rgba(28, 28, 30, 0.4);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --glass-bg: rgba(28, 28, 30, 0.4);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-highlight: rgba(255, 255, 255, 0.05);
+      --accent-color: #0A84FF;
+      --text-main: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.6);
+      --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     * {
@@ -412,24 +479,73 @@ function getFramedPage(innerContent) {
 
     body {
       background-color: var(--bg-dark);
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(0, 229, 255, 0.05) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(255, 0, 128, 0.03) 0px, transparent 50%),
-        linear-gradient(rgba(255, 255, 255, 0.007) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.007) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
       color: var(--text-main);
-      font-family: 'Inter', sans-serif;
+      font-family: var(--font-family);
+      -webkit-font-smoothing: antialiased;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
     }
 
+    /* Mesh Gradient Background */
+    .bg-mesh {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 50%, #1a1a24 0%, #000000 100%);
+    }
+
+    .blob {
+      position: absolute;
+      filter: blur(80px);
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: float 20s infinite alternate ease-in-out;
+    }
+
+    .blob-1 {
+      top: -10%;
+      left: -10%;
+      width: 50vw;
+      height: 50vw;
+      background: #5E5CE6;
+      animation-delay: 0s;
+    }
+
+    .blob-2 {
+      bottom: -20%;
+      right: -10%;
+      width: 60vw;
+      height: 60vw;
+      background: #BF5AF2;
+      animation-delay: -5s;
+    }
+
+    .blob-3 {
+      top: 40%;
+      left: 60%;
+      width: 40vw;
+      height: 40vw;
+      background: var(--accent-color);
+      animation-delay: -10s;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(5%, 10%) scale(1.1); }
+      66% { transform: translate(-10%, 5%) scale(0.9); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+
     header {
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      background: rgba(11, 12, 16, 0.6);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      background: rgba(0, 0, 0, 0.4);
       border-bottom: 1px solid var(--border-color);
       padding: 16px 40px;
       display: flex;
@@ -447,52 +563,34 @@ function getFramedPage(innerContent) {
     }
 
     .logo-icon {
-      width: 32px;
-      height: 32px;
-      background: linear-gradient(135deg, #00e5ff, #ff007f);
-      border-radius: 8px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .logo-icon::after {
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      right: 2px;
-      bottom: 2px;
-      background: var(--bg-dark);
+      width: 24px;
+      height: 24px;
       border-radius: 6px;
-    }
-
-    .logo-icon::before {
-      content: '⚡';
-      position: absolute;
-      z-index: 2;
-      font-size: 14px;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, rgba(10, 132, 255, 0.2), rgba(10, 132, 255, 0.05));
+      border: 1px solid rgba(10, 132, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
     }
 
     .logo-text {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 700;
-      font-size: 20px;
-      letter-spacing: -0.5px;
-      background: linear-gradient(to right, #ffffff, #8a8f98);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      font-weight: 600;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
     }
 
     .connection-status {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 13px;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
       color: var(--text-muted);
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--panel-dark);
       padding: 6px 14px;
       border-radius: 20px;
       border: 1px solid var(--border-color);
@@ -502,8 +600,8 @@ function getFramedPage(innerContent) {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background-color: #4caf50;
-      box-shadow: 0 0 8px #4caf50;
+      background-color: #34C759;
+      box-shadow: 0 0 8px rgba(52, 199, 89, 0.6);
     }
 
     main {
@@ -518,82 +616,109 @@ function getFramedPage(innerContent) {
     }
 
     .framed-content {
-      animation: fadeIn 0.4s ease-out;
+      animation: fadeIn 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(20px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     /* Shared style utilities for inner screens */
     .option-card {
       background: var(--panel-dark);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
+      border-radius: 20px;
       padding: 24px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.3s ease, border-color 0.2s;
       position: relative;
       overflow: hidden;
     }
     
+    .option-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, var(--glass-highlight) 50%, rgba(255,255,255,0) 100%);
+    }
+
     .option-card:hover {
-      border-color: var(--accent-color);
-      box-shadow: 0 0 20px var(--accent-glow);
-      transform: translateY(-2px);
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.2);
     }
 
     .option-card.selected {
       border-color: var(--accent-color);
-      background: rgba(0, 229, 255, 0.05);
-      box-shadow: 0 0 24px var(--accent-glow);
+      background: rgba(10, 132, 255, 0.1);
+      box-shadow: 0 0 20px rgba(10, 132, 255, 0.2);
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #00e5ff, #00b0ff);
-      color: #0b0c10;
+      background: var(--text-main);
+      color: var(--bg-dark);
       border: none;
       padding: 14px 28px;
       font-weight: 600;
-      border-radius: 8px;
+      border-radius: 20px;
       cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+      font-family: inherit;
+      font-size: 14px;
+      transition: opacity 0.2s, transform 0.2s;
+      box-shadow: 0 4px 14px rgba(255, 255, 255, 0.2);
     }
 
     .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(0, 229, 255, 0.5);
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+
+    .btn-primary:disabled {
+      background: rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.5);
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
     }
 
     .btn-secondary {
-      background: transparent;
+      background: var(--panel-dark);
       color: var(--text-main);
       border: 1px solid var(--border-color);
       padding: 14px 28px;
       font-weight: 500;
-      border-radius: 8px;
+      border-radius: 20px;
       cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
       transition: all 0.2s ease;
+      backdrop-filter: blur(20px);
     }
 
     .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
     }
   </style>
 </head>
 <body>
+  <div class="bg-mesh">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
   <header>
     <div class="logo-container">
-      <div class="logo-icon"></div>
+      <div class="logo-icon">✨</div>
       <div class="logo-text">Create</div>
     </div>
     <div class="connection-status">
       <span class="status-indicator"></span>
-      Visual Companion Connected
+      Companion Active
     </div>
   </header>
   
@@ -610,8 +735,12 @@ function getFramedPage(innerContent) {
       const data = JSON.parse(event.data);
       if (data.type === "new-screen") {
         const currentFile = window.location.pathname.split('/').pop();
-        if (currentFile !== data.file) {
-          window.location.href = "/screens/" + data.file;
+        if (window === window.top) {
+          if (currentFile !== data.file) {
+            window.location.href = "/screens/" + data.file;
+          } else {
+            window.location.reload();
+          }
         }
       }
     };

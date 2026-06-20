@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creation Wizard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FAFAFC;
+      --card-bg: rgba(255, 255, 255, 0.65);
+      --card-border: rgba(255, 255, 255, 0.8);
+      --text-main: #1C1C1E;
+      --text-muted: #8E8E93;
+      --accent: #007AFF;
+      --accent-hover: #0056b3;
+      --input-bg: rgba(255, 255, 255, 0.8);
+      --input-border: rgba(0, 0, 0, 0.08);
+      --shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0A0A0C;
+        --card-bg: rgba(20, 20, 22, 0.65);
+        --card-border: rgba(255, 255, 255, 0.08);
+        --text-main: #F2F2F7;
+        --text-muted: #98989D;
+        --accent: #0A84FF;
+        --accent-hover: #409CFF;
+        --input-bg: rgba(0, 0, 0, 0.3);
+        --input-border: rgba(255, 255, 255, 0.1);
+        --shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Ambient Gradient Orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: 0;
+      opacity: 0.6;
+      animation: float 10s ease-in-out infinite alternate;
+    }
+    .orb-1 {
+      width: 400px;
+      height: 400px;
+      background: rgba(10, 132, 255, 0.3);
+      top: -100px;
+      left: -100px;
+    }
+    .orb-2 {
+      width: 500px;
+      height: 500px;
+      background: rgba(191, 90, 242, 0.2);
+      bottom: -150px;
+      right: -100px;
+      animation-delay: -5s;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px) scale(1); }
+      100% { transform: translateY(30px) scale(1.05); }
+    }
+
+    .wizard-container {
+      position: relative;
+      z-index: 10;
+      background: var(--card-bg);
+      backdrop-filter: blur(40px) saturate(200%);
+      -webkit-backdrop-filter: blur(40px) saturate(200%);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 600px;
+      padding: 40px;
+      box-shadow: var(--shadow);
+      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .header {
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .header p {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .question-group {
+      margin-bottom: 24px;
+    }
+
+    .question-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+
+    .question-group input, .question-group textarea {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-main);
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .question-group input:focus, .question-group textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.15);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 16px;
+    }
+
+    .btn-submit:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-submit:active {
+      transform: translateY(1px);
+    }
+    
+    .loading-overlay {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 20;
+    }
+    
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--input-border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 16px;
+    }
+    
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+  </style>
+</head>
+<body>
+
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="wizard-container">
+    <div class="loading-overlay" id="loading-overlay">
+      <div class="spinner"></div>
+      <p style="color: var(--text-muted); font-weight: 500;">Synthesizing Product...</p>
+    </div>
+
+    <div class="header">
+      <h1>Let's Refine Your Vision</h1>
+      <p>I need a few more details to generate the perfect product for your brief.</p>
+    </div>
+
+    <div id="questions-container">
+      <!-- AI Agent will inject clarifying questions here -->
+      <!-- Example structure:
+      <div class="question-group">
+        <label>Which LLM Provider APIs are you targeting?</label>
+        <input type="text" id="q1" placeholder="e.g. OpenAI, Anthropic, local Llama..." />
+      </div>
+      -->
+    </div>
+
+    <button class="btn-submit" onclick="submitAnswers()">Begin Generation</button>
+  </div>
+
+  <script>
+    function submitAnswers() {
+      const container = document.getElementById('questions-container');
+      const inputs = container.querySelectorAll('input, textarea, select');
+      const answers = {};
+      
+      inputs.forEach(input => {
+        // Collect question label if possible, otherwise use id
+        const labelEl = input.previousElementSibling;
+        const key = labelEl ? labelEl.innerText : input.id;
+        answers[key] = input.value;
+      });
+
+      document.getElementById('loading-overlay').style.display = 'flex';
+
+      // The submitEvent function is injected by the start-server.js
+      if (window.submitEvent) {
+        window.submitEvent({
+          action: "inline_answers",
+          answers: answers
+        });
+      } else {
+        console.error("submitEvent not found! Ensure server is injecting it.");
+      }
+    }
+  </script>
+</body>
+</html>

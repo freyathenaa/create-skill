@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{PROJECT_NAME}} - Agent IDE</title>
+  <!-- Google Fonts & Style Overrides -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --accent-color: {{ACCENT_COLOR}};
+      --accent-glow: {{ACCENT_GLOW}};
+    }
+  </style>
+  <link rel="stylesheet" href="ide-template.css">
+</head>
+<body>
+
+  <!-- Main IDE Wrapper -->
+  <div class="ide-container">
+    
+    <!-- HEADER -->
+    <header class="ide-header">
+      <div class="ide-logo">{{PROJECT_NAME}} IDE</div>
+      <div class="ide-actions">
+        <button class="btn-ide" onclick="clearLogs()">Clear Console</button>
+        <button class="btn-ide btn-ide-accent" onclick="triggerSimulatedTask()">Run Simulation</button>
+      </div>
+    </header>
+
+    <!-- SIDEBAR: AGENT ROSTER -->
+    <aside class="ide-sidebar">
+      <div class="sidebar-title">Agent Team</div>
+      <div class="agent-list" id="agent-roster">
+        <!-- Dynamically populated from customizer choices -->
+        {{AGENT_ROSTER_HTML}}
+      </div>
+    </aside>
+
+    <!-- CENTER WORKSPACE: KANBAN & SETTINGS -->
+    <main class="ide-center">
+      <div class="ide-tabs">
+        <div class="ide-tab active" onclick="switchTab('kanban', this)">Task Kanban</div>
+        <div class="ide-tab" onclick="switchTab('telemetry', this)">System Analytics</div>
+      </div>
+
+      <!-- Tab 1: Kanban -->
+      <div class="workspace-view active" id="view-kanban">
+        <div class="task-creator">
+          <input type="text" id="new-task-input" class="task-input" placeholder="Enter task name (e.g. Implement JWT authentication, Design DB schema...)" />
+          <button class="btn-ide btn-ide-accent" onclick="addNewTask()">Add Task</button>
+        </div>
+
+        <div class="kanban-board">
+          <!-- Column 1: TO DO -->
+          <div class="kanban-col">
+            <div class="kanban-col-title">To Do</div>
+            <div class="kanban-tasks" id="tasks-todo">
+              <div class="kanban-card" id="default-card-1">
+                <div class="kanban-card-title">Setup project skeleton</div>
+                <div class="kanban-card-desc">Initialize directory, package.json, and configurations.</div>
+                <span class="kanban-card-badge">Architect</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: IN PROGRESS -->
+          <div class="kanban-col">
+            <div class="kanban-col-title">In Progress</div>
+            <div class="kanban-tasks" id="tasks-progress">
+              <!-- Empty initially -->
+            </div>
+          </div>
+
+          <!-- Column 3: DONE -->
+          <div class="kanban-col">
+            <div class="kanban-col-title">Done</div>
+            <div class="kanban-tasks" id="tasks-done">
+              <div class="kanban-card">
+                <div class="kanban-card-title">Gather product specs</div>
+                <div class="kanban-card-desc">Review competitor features and outline requirements documentation.</div>
+                <span class="kanban-card-badge">Researcher</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Telemetry Analytics -->
+      <div class="workspace-view" id="view-telemetry" style="padding: 30px;">
+        <h2 style="font-size: 18px; margin-bottom: 20px; font-weight: 600;">Mainframe Token Telemetry</h2>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px;">
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px;">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Total Token Consumption</div>
+            <div style="font-size: 32px; font-weight: 800; color: var(--accent-color); margin-top: 5px;" id="total-tokens">142,504</div>
+          </div>
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px;">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Projected Run Cost</div>
+            <div style="font-size: 32px; font-weight: 800; color: var(--accent-color); margin-top: 5px;" id="total-cost">$2.85</div>
+          </div>
+        </div>
+
+        <h2 style="font-size: 18px; margin-bottom: 20px; font-weight: 600;">Workspace File Tree</h2>
+        <div style="font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); line-height: 1.8;">
+          📁 project-root<br/>
+          &nbsp;&nbsp;📄 package.json<br/>
+          &nbsp;&nbsp;📁 src<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;📄 app.js<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;📄 auth.js<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;📄 database.js<br/>
+          &nbsp;&nbsp;📁 tests<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;📄 test-specs.js
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT PANEL: CODE VIEW & CONSOLE LOGS -->
+    <div class="ide-right">
+      
+      <!-- Top: Code Editor -->
+      <div class="code-panel">
+        <div class="editor-header">
+          <span id="editor-file-tab">src/app.js</span>
+          <span>JavaScript</span>
+        </div>
+        <pre class="editor-body" id="editor-body-content"><span class="code-keyword">const</span> express = <span class="code-function">require</span>(<span class="code-string">'express'</span>);
+<span class="code-keyword">const</span> app = <span class="code-function">express</span>();
+
+<span class="code-comment">// Initialize basic server middleware</span>
+app.<span class="code-function">use</span>(express.<span class="code-function">json</span>());
+
+app.<span class="code-function">get</span>(<span class="code-string">'/health'</span>, (req, res) => {
+  res.<span class="code-function">json</span>({ status: <span class="code-string">'nominal'</span> });
+});
+
+module.exports = app;</pre>
+      </div>
+
+      <!-- Bottom: System Console Logs -->
+      <div class="log-panel">
+        <div class="logs-header">System Console Logs</div>
+        <div class="logs-body" id="logs-container">
+          <div class="log-row">
+            <span class="log-time">[19:31:02]</span>
+            <span class="log-agent">[SYSTEM]</span>
+            <span class="log-text">Workspace initialized. Connected to multi-agent mainframe.</span>
+          </div>
+          <div class="log-row">
+            <span class="log-time">[19:31:05]</span>
+            <span class="log-agent">[SYSTEM]</span>
+            <span class="log-text">Agent roster synchronized. All models ready for collaboration.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="ide-footer">
+      <div>Mainframe Port: 9222 | Workspace Active</div>
+      <div>Mainframe CPU: 14.2% | Latency: 15ms</div>
+    </footer>
+
+  </div>
+
+  <!-- Dynamic Simulated Agent Collaboration Code -->
+  <script>
+    function switchTab(tabName, element) {
+      document.querySelectorAll('.ide-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.workspace-view').forEach(v => v.classList.remove('active'));
+      
+      element.classList.add('active');
+      document.getElementById('view-' + tabName).classList.add('active');
+    }
+
+    function clearLogs() {
+      document.getElementById('logs-container').innerHTML = '';
+      logRow('SYSTEM', 'Console logs cleared.');
+    }
+
+    function logRow(agent, text) {
+      const logs = document.getElementById('logs-container');
+      const time = new Date().toLocaleTimeString();
+      const row = document.createElement('div');
+      row.className = 'log-row';
+      row.innerHTML = `
+        <span class="log-time">[${time}]</span>
+        <span class="log-agent">[${agent}]</span>
+        <span class="log-text">${text}</span>
+      `;
+      logs.appendChild(row);
+      logs.scrollTop = logs.scrollHeight;
+    }
+
+    // Task simulation variables
+    let taskCount = 1;
+    const SIMULATED_CODE = {
+      database: `// src/database.js
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database(':memory:');
+
+// Initialize schema tables
+db.serialize(() => {
+  db.run("CREATE TABLE users (id INT, name TEXT)");
+  db.run("CREATE TABLE logs (timestamp TEXT, msg TEXT)");
+});
+
+module.exports = db;`,
+      auth: `// src/auth.js
+const jwt = require('jsonwebtoken');
+const SECRET = 'mainframe-super-secret-key';
+
+function generateToken(user) {
+  return jwt.sign({ id: user.id }, SECRET, { expiresIn: '1h' });
+}
+
+function verifyToken(req, res, next) {
+  const token = req.headers['authorization'];
+  if (!token) return res.status(403).send('Token required');
+  next();
+}
+
+module.exports = { generateToken, verifyToken };`
+    };
+
+    function addNewTask() {
+      const input = document.getElementById('new-task-input');
+      const val = input.value.trim();
+      if (!val) return;
+
+      taskCount++;
+      const id = 'task-sim-' + taskCount;
+      
+      // Determine fitting agent to assign based on keywords
+      let assignedAgent = 'Coder';
+      let badgeColor = 'var(--accent-color)';
+      
+      if (val.toLowerCase().includes('db') || val.toLowerCase().includes('sql') || val.toLowerCase().includes('data')) {
+        assignedAgent = 'Architect';
+      } else if (val.toLowerCase().includes('spec') || val.toLowerCase().includes('research')) {
+        assignedAgent = 'Researcher';
+      } else if (val.toLowerCase().includes('test') || val.toLowerCase().includes('bug')) {
+        assignedAgent = 'Tester';
+      } else if (val.toLowerCase().includes('marketing') || val.toLowerCase().includes('plan')) {
+        assignedAgent = 'Planner';
+      }
+
+      const card = document.createElement('div');
+      card.className = 'kanban-card';
+      card.id = id;
+      card.innerHTML = `
+        <div class="kanban-card-title">${val}</div>
+        <div class="kanban-card-desc">Simulated task assigned to ${assignedAgent} agent.</div>
+        <span class="kanban-card-badge">${assignedAgent}</span>
+      `;
+
+      document.getElementById('tasks-todo').appendChild(card);
+      input.value = '';
+
+      // Trigger automatic simulation workflow
+      runTaskSimulation(id, val, assignedAgent);
+    }
+
+    function triggerSimulatedTask() {
+      // Manual trigger button defaults
+      const input = document.getElementById('new-task-input');
+      input.value = 'Implement user verification inside auth.js';
+      addNewTask();
+    }
+
+    async function runTaskSimulation(cardId, taskName, agent) {
+      const card = document.getElementById(cardId);
+      if (!card) return;
+
+      // Update Roster Ranks
+      setActiveAgent(agent);
+
+      // Phase 1: Researcher / Architect coordinates
+      logRow(agent, `Received directive: "${taskName}". Initializing task schema...`);
+      await delay(1500);
+
+      // Move card to In Progress
+      document.getElementById('tasks-progress').appendChild(card);
+      logRow('SYSTEM', `Task "${taskName}" moved to IN PROGRESS.`);
+      
+      // Phase 2: Coder implements changes
+      setActiveAgent('Coder');
+      logRow('Coder', `Writing implementation file src/auth.js...`);
+      
+      // Load simulated code into editor
+      const isAuthTask = taskName.toLowerCase().includes('auth') || taskName.toLowerCase().includes('verification');
+      const targetCode = isAuthTask ? SIMULATED_CODE.auth : SIMULATED_CODE.database;
+      const targetFile = isAuthTask ? 'src/auth.js' : 'src/database.js';
+      
+      document.getElementById('editor-file-tab').innerText = targetFile;
+      await typeCodeIntoEditor(targetCode);
+      
+      await delay(1000);
+
+      // Phase 3: Tester checks changes
+      setActiveAgent('Tester');
+      logRow('Tester', `Scanning ${targetFile} for code validation...`);
+      await delay(1200);
+      logRow('Tester', `Tests passed successfully. Compile code build [SUCCESS]`);
+      await delay(800);
+
+      // Move to Done
+      document.getElementById('tasks-done').appendChild(card);
+      logRow('SYSTEM', `Task "${taskName}" completed successfully.`);
+      
+      // Reset active state
+      clearActiveAgent();
+      updateTokenMetrics();
+    }
+
+    function setActiveAgent(agentName) {
+      document.querySelectorAll('.agent-item').forEach(item => {
+        const name = item.querySelector('.agent-name').innerText;
+        if (name.includes(agentName)) {
+          item.classList.add('active');
+          item.querySelector('.agent-status').innerText = 'Working...';
+        } else {
+          item.classList.remove('active');
+          item.querySelector('.agent-status').innerText = 'Idle';
+        }
+      });
+    }
+
+    function clearActiveAgent() {
+      document.querySelectorAll('.agent-item').forEach(item => {
+        item.classList.remove('active');
+        item.querySelector('.agent-status').innerText = 'Idle';
+      });
+    }
+
+    function delay(ms) {
+      return new Promise(r => setTimeout(r, ms));
+    }
+
+    function updateTokenMetrics() {
+      const tokenEl = document.getElementById('total-tokens');
+      const costEl = document.getElementById('total-cost');
+      
+      const currentTokens = parseInt(tokenEl.innerText.replace(/,/g, ''), 10);
+      const newTokens = currentTokens + Math.floor(Math.random() * 20000 + 5000);
+      
+      tokenEl.innerText = newTokens.toLocaleString();
+      costEl.innerText = '$' + (newTokens * 0.00002).toFixed(2);
+    }
+
+    async function typeCodeIntoEditor(code) {
+      const editor = document.getElementById('editor-body-content');
+      editor.innerText = '';
+      
+      // Simulated typewriting effect in blocks/lines
+      const lines = code.split('\n');
+      for (const line of lines) {
+        editor.innerText += line + '\n';
+        editor.scrollTop = editor.scrollHeight;
+        await delay(120);
+      }
+    }
+  </script>
+</body>
+</html>
