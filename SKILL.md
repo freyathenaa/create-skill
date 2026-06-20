@@ -14,10 +14,13 @@ description: >-
 
 This skill allows the user to invoke `/create` to generate digital products or personal spaces (landing pages, Neocities blogs, courses, ebooks, dashboards, template packs, plugins, games, planners, wellness trackers) using a visual wizard or fully random generation. It coordinates the **Visual Companion Server** to handle user interaction and renders premium layouts using your curated design systems.
 
+As an overarching directive, adhere to the `using-superpowers` skill philosophy. If you repeatedly encounter roadblocks or inefficiencies during product creation, proactively utilize the `writing-skills` skill to author new specialized workflows.
+
 ## Dependencies
 
 - **digital-product-creator**: Used to position, price, and architect the digital product contents (Phase 2 & 4).
 - **taste-this**: Used to define colors, typography, UI components, grids, and premium aesthetics matching the chosen style.
+- **Superpowers Suite**: This skill acts as a master orchestrator over the Superpowers toolkit. You MUST heavily utilize: `brainstorming`, `writing-plans`, `executing-plans`, `subagent-driven-development`, `dispatching-parallel-agents`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `finishing-a-development-branch`, `using-git-worktrees`, `using-superpowers`, and `writing-skills`.
 
 ## Quick Start
 
@@ -32,28 +35,28 @@ Capture the `screen_dir` and `state_dir` paths from the returned JSON.
 
 ---
 
-## Inline Brief Mode (Skips Wizard)
+## Inline Brief Mode (Dynamic Wizard)
 
-If the user invokes `/create` with **accompanying text** (i.e., a description or request follows the command), do **not** launch the wizard. Instead:
+If the user invokes `/create` with **accompanying text** (i.e., a description or request follows the command), you must present a dynamic conversational wizard.
 
 1. Treat the full inline text as a **direct creator brief**.
-   *Note: If the inline text contains a URL (e.g., a GitHub repo, Notion doc, or reference site) or a local file path, you MUST use your `read_url_content` or `read_file`/`view_file` tools to ingest the content BEFORE parsing the brief.*
-2. Parse the description to extract implied context:
-   - **Creator/Brand Name** — infer from any named product, brand, or project.
-   - **Journey & Goals** — what the creator is trying to build and why.
-   - **Creation** — the specific product, tool, or offering being described.
-   - **Problem** — the audience pain point the product solves.
-   - **Scope** — core features, integrations, and requirements mentioned.
-3. Use this parsed brief exactly as if the user had submitted `choices.mode = "brief"` via the wizard. Proceed directly to **Step 1b** below (Start Server, Write Showcase, Skip Wizard Interaction).
-4. Auto-select the best matching **Category**, **Stack** (e.g., vanilla, react, nextjs), **Style**, and **Trend** from the brief's context.
+   *Note: If the inline text contains a URL or a local file path, you MUST use your `read_url_content` or `read_file`/`view_file` tools to ingest the content BEFORE parsing the brief. Additionally, use `search_web` and `read_url_content` tools to actively scrape live market positioning data for mentioned competitors.*
+2. **Context Awareness via Graphify**: If you are inside an existing codebase or the user wants to add to an existing project, run `graphify` (if the skill is available and the project is large enough) to map the existing codebase structure and schemas to ensure the generated code integrates seamlessly.
+3. **Superpowers Planning**: Use the `brainstorming` skill to explore potential product architectures and feature sets. Following that, use the `writing-plans` skill to formalize an implementation plan.
+4. Parse the description and plan to extract implied context and **generate 3-4 highly specific clarifying questions** to resolve any ambiguity (e.g., "Which LLM provider APIs are you targeting?", "Do you prefer a dark technical theme or a light minimalist theme?").
+5. Proceed to **Step 1b** below.
 
-### Step 1b: Inline Brief — Server & Showcase Only
+### Step 1b: Inline Brief — Serve Dynamic Wizard
 
 1. Run the server startup command:
    `node /Users/heavn/.gemini/config/skills/create/scripts/start-server.js --project-dir /Users/heavn/.gemini/antigravity/scratch --open`
 2. Parse `screen_dir` and `state_dir` from the returned JSON.
-3. Inform the user: *"Your brief has been received. Generating your product now — no wizard needed."*
-4. Skip copying `01_start.html` and waiting for wizard events. Jump directly to **Step 3: Generate and Render Product** using the inline-parsed brief as `choices.brief`.
+3. Copy `/Users/heavn/.gemini/config/skills/create/templates/02_inline_wizard.html` to `<screen_dir>/02_inline_wizard.html`. Open it and inject your 3-4 generated clarifying questions into the `#questions-container` div as HTML inputs, ensuring the submit button captures them and calls `window.submitEvent({ action: "inline_answers", answers: [...] })`.
+4. Inform the user that the dynamic wizard is ready in their browser.
+5. **Start the background event watcher**:
+   Run the following command as a background task (e.g., using `run_command` with a low `WaitMsBeforeAsync` of 500ms):
+   `python3 /Users/heavn/.gemini/config/skills/create/scripts/await-event.py <state_dir>/events 300`
+6. Stop calling tools. The system will automatically wake you up when the background watcher completes (once the user submits their answers in the dynamic wizard).
 
 ---
 
@@ -62,7 +65,8 @@ If the user invokes `/create` with **accompanying text** (i.e., a description or
 When this skill is triggered **without inline text**, execute the following state machine step-by-step:
 
 ### Step 1: Start the Visual Companion Server & Wait for Wizard
-1. Run the server startup command using `node`:
+1. **Persistent Memory Load**: Check for `/Users/heavn/.gemini/antigravity/create_memory.json`. If it exists, read it using `view_file` to load the user's historical preferences (e.g., preferred stack, colors, tone).
+2. Run the server startup command using `node`:
    `node /Users/heavn/.gemini/config/skills/create/scripts/start-server.js --project-dir /Users/heavn/.gemini/antigravity/scratch --open`
 2. Parse the returned JSON to extract:
    - `screen_dir` (e.g. `/Users/heavn/.gemini/antigravity/scratch/.superpowers/brainstorm/session_1234/content`)
@@ -86,8 +90,8 @@ Once you are woken up by the background task completion message:
      - `modules` — Array of active feature/module IDs toggled on (e.g. `["gestures", "voice", "terminal"]`). Only include these modules in the final output.
    - If `choices.mode` is `random`:
      - Randomly select values:
-       - **Category**: one of `blog`, `saas`, `course`, `ebook`, `plugin`, `game`, `dashboard`, `planner`, `wellness`, `jarvis`
-       - **Style**: one of `y2k`, `retro-console`, `claymorphic`, `crt-radio`, `frutiger-aero`, `vaporwave`, `cyber-goth`, `gothic-grunge`
+       - **Category**: one of `blog`, `saas`, `course`, `ebook`, `chrome-extension`, `data-app`, `game`, `dashboard`, `planner`, `wellness`, `jarvis`
+       - **Style**: one of `apple-hig`, `vercel-geist`, `linear-dark`, `stripe-saas`
        - **Trend**: one of `ai-agents`, `solopreneur`, `neo-brutalist`, `local-first`, `zero-bloat`, `privacy-first`, `micro-community`
        - **CustomizerState**: select random options:
          - `brandName`: a creative tagline or voice name
@@ -122,20 +126,26 @@ When generating any digital product (especially if the user aims to sell it):
 5. **Align with Creator Brief**: If the user selected the `brief` mode, the generated copywriting (headlines, value propositions, features), layout elements, and deliverables MUST directly speak to and solve the user's specific audience problem and goals defined in `choices.brief`.
 
 #### Synthesis Workflow
-1. **Use the Project Name** (`choices.projectName`) as the product brand throughout all generated content — landing page headings, ZIP folder naming, showcase title, and any copy.
+1. **Workspace Setup**: If creating the project inside an existing repository, invoke the `using-git-worktrees` skill to safely isolate this new product generation from the main branch. Use the `executing-plans` skill to methodically execute your written plan.
+2. **Use the Project Name** (`choices.projectName`) as the product brand throughout all generated content — landing page headings, ZIP folder naming, showcase title, and any copy.
 
-2. **Handle Framework Initializations & PWA (`choices.stack`)**:
+3. **Handle Framework Initializations & PWA (`choices.stack`)**:
    - If `choices.stack` is `react` or `nextjs`, run the appropriate scaffolding command (e.g., `npx -y create-vite@latest ./ --template react` or `npx -y create-next-app@latest ./`) inside `<screen_dir>`. Use non-interactive flags to avoid blocking prompts. Ensure your subsequent file writes (`index.jsx`, `App.jsx`, `page.tsx`) align with the framework structure.
+   - **Multi-Agent Orchestration**: For complex frameworks (`react`, `nextjs`, `data-app`), utilize the `dispatching-parallel-agents` and `subagent-driven-development` skills. Spawn specialized subagents (e.g., a Backend Agent and a UI Agent) to execute the implementation plan in parallel. **CRITICAL**: Wait for all parallel subagents to report completion via the `verification-before-completion` skill before proceeding. (Skip parallel agents for simple `vanilla` or `blog` stacks to save quota).
    - For `vanilla`, write `index.html` and assets directly to `<screen_dir>`. Always auto-generate a `manifest.json` (defining `name`, `short_name`, `start_url`, `display: "standalone"`, `theme_color` based on `accentColor`) and a basic `service-worker.js` that caches the main assets, and link them in the `<head>` of `index.html` to make the product instantly installable as a Progressive Web App (PWA).
 
-3. **Write Files Atomically**: To prevent the browser from reloading on an incomplete file (which displays an ugly white page), always write new HTML, CSS, or JS files to a temporary path first (e.g., `index.html.tmp`), populate the content completely, and then rename the file to its final name (e.g., `index.html`). The companion server watcher will ignore `.tmp` files and only trigger a clean refresh once the rename operation completes.
+4. **Backend & Cloud Integration (`choices.backend`)**:
+   - If `choices.backend` is `firebase`, leverage the `firebase-firestore` and `firebase-auth-basics` skills to immediately provision the schema, rules, and configuration inside `<screen_dir>`.
 
-4. **Synthesize Content** using the `digital-product-creator` rules and appropriate template structures:
-   - **blog**: A two-column Neocities-style personal webspace. Main section has 3-4 retro blog posts with text-based separators, a status updates/shoutbox widget, an "About the Creator" widget, custom guestbook entries, and site-rings links.
+5. **Write Files Atomically**: To prevent the browser from reloading on an incomplete file (which displays an ugly white page), always write new HTML, CSS, or JS files to a temporary path first (e.g., `index.html.tmp`), populate the content completely, and then rename the file to its final name (e.g., `index.html`). The companion server watcher will ignore `.tmp` files and only trigger a clean refresh once the rename operation completes.
+
+6. **Synthesize Content** using the `digital-product-creator` rules and appropriate template structures:
+   - **blog**: A two-column Neocities-style personal webspace. Main section has 3-4 retro blog posts with text/ASCII dividers, a status updates/shoutbox widget, an "About the Creator" widget, custom guestbook entries, and site-rings links.
    - **saas**: A landing page blueprint, API schema, database schema, payment flow framework.
    - **course**: 5-8 modules outlining a learning experience, worksheets, slide content.
    - **ebook**: Chapter guides, conversion funnel, introductory hook.
-   - **plugin**: Chrome extension Manifest V3, VS Code settings configuration, or Figma plugin setup.
+   - **chrome-extension**: Manifest V3 Chrome extensions ready for the Web Store. Use the `chrome-extensions` skill.
+   - **data-app**: Interactive data visualizations or dashboards. Use the `building-data-apps` skill.
    - **game**: An HTML Canvas arcade skeleton, WebGL shader snippet, or interactive text adventure.
    - **dashboard**: Responsive telemetry grids, data graphs, prompt engineering workshop design.
    - **planner**: Launch marketing workflows, content scheduling calendars, product ops pipelines.
@@ -165,44 +175,28 @@ When generating any digital product (especially if the user aims to sell it):
        - `planner` -> avatar `📅`, name `AI Marketing Planner`
      - Ensure the output IDE runs completely client-side, allows adding tasks to a Kanban board, and simulates active agent typing/editing sequences in the editor window.
 
-4. **Apply Design Aesthetic** matching the selected theme (`taste-this` instruction set):
-   - **y2k** (Frutiger Metro / Web 2.0 Gloss):
-     - Background: Vibrant gradients (Sky blue to aqua teal `#00BFFF` to `#00c3ff`).
-     - Layout: Glassmorphic containers (`backdrop-filter: blur(10px)`), pill-shaped navigation, bubbly circular elements, vector star decorations, and circular vectors.
-     - Borders: Clean translucent borders (`border: 1px solid rgba(255,255,255,0.4)`).
-   - **retro-console** (Japanese 3D / burgeritchi):
-     - Background: Dark slate/navy console background (`#080c14`).
-     - Layout: Isometric layout borders, retro 90s console gaming HUD, thick gaming frames, styled text headers, retro status bars.
-     - Fonts: Monospace (`Fira Code`, `Courier New`) or pixelated look.
-     - Filters: Grid overlays and CRT scanline styling (`background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06))`).
-   - **claymorphic** (Tactile Clay / infini):
-     - Background: Soft pastel background (`#edf2f4` or soft clay peach `#ffe5d9`).
-     - Shape: Extra rounded shapes (`border-radius: 30px` to `40px`).
-     - CSS Box Shadows (Inflated look):
-       `box-shadow: 12px 12px 24px rgba(0,0,0,0.08), inset -8px -8px 16px rgba(0,0,0,0.1), inset 8px 8px 16px rgba(255,255,255,0.8);`
-     - Buttons: Tactile soft play-doh appearance.
-   - **crt-radio** (Old VFD Screen / xylox & megaknecht):
-     - Background: Brushed dark metal (`#121212`) or grunge post-apocalyptic fallout frames.
-     - Display: Bright glowing red or amber LCD panels (`background: #2a0000; border: 3px dashed #000; color: #ff3333; text-shadow: 0 0 10px #ff3333; font-family: Courier, monospace`).
-     - Widgets: Radio tuner indicators, analog status buttons, segmented display panels.
-   - **frutiger-aero** (Glossy Aqua Skeuomorphism):
-     - Background: Bright sky-blue to fresh lime gradients (`linear-gradient(135deg, #00bfff, #00ff88)`).
-     - Style: Ultra-glossy glass containers, water droplet overlays, aurora-like background glows, and floating bubbles.
-     - Borders: Semi-transparent white borders with bright inner drop shadows.
-   - **vaporwave** (90s Glitch Lounge):
-     - Background: Pastel pink to twilight purple gradients (`linear-gradient(to bottom, #ff007f, #7f00ff)`).
-     - Style: Retro wireframe grids (`background-image: linear-gradient(rgba(255, 0, 127, 0.1) 1px, transparent 1px)`), simulated VHS overlay filters, and 3D geometric busts or palm tree vectors.
-     - Fonts: Playful italicized sans-serif paired with Japanese text accents.
-   - **cyber-goth** (Neon Obsidian):
-     - Background: Absolute dark carbon/obsidian backgrounds (`#0a0a0c`).
-     - Style: Dark tech borders with high-contrast glowing neon magenta or cyan drops (`box-shadow: 0 0 15px rgba(255, 0, 85, 0.5)`).
-     - Accent: Bright wireframe outlines, circuit grid patterns, and technical details.
-   - **gothic-grunge** (Medieval Parchment):
-     - Background: High-contrast parchment paper or textured grunge gray background.
-     - Style: Thick, jagged hand-drawn borders, heavy ink splatters, medieval banners, and distressed metallic frames.
-     - Fonts: Blackletter, gothic-serif, or retro typewriters.
+7. **Apply Design Aesthetic** matching the selected theme (No retro themes allowed. Only use premium, modern aesthetics inspired by `taste-this`):
+   - **apple-hig** (Apple iOS/macOS Style):
+     - Background: Pristine white (`#FFFFFF`) or deep OLED black (`#000000`) with very subtle light gray/dark gray sectioning.
+     - Layout: Absolute minimalism. Large, bold, tracking-adjusted typography for headings (SF Pro Display). Generous whitespace.
+     - Elements: Glassmorphism (`backdrop-filter: blur(20px) saturate(180%)`), soft translucent overlays, large border radii for cards (`border-radius: 16px` to `24px`).
+     - Accents: Signature Apple blue (`#007AFF`) or a vibrant brand color. High contrast, perfect visual hierarchy.
+   - **vercel-geist** (Vercel/Next.js Style):
+     - Background: Pure monochrome (`#000000` or `#FFFFFF`) relying on subtle grays (e.g., `#111111`, `#FAFAFA`) for depth.
+     - Layout: Developer-focused, hyper-minimalist. Extreme precision, strict structural grid.
+     - Elements: Very thin borders (`1px solid #EAEAEA` or `#333`), small border radii (`border-radius: 6px` or `8px`), no heavy shadows.
+     - Typography: Inter or Geist. High contrast text, restrained font weights.
+   - **linear-dark** (Linear App Style):
+     - Background: Deep technical dark mode (`#0E0F11`) with subtle radial gradients for illumination.
+     - Layout: Highly structural, data-dense but clean. Beautiful custom iconography.
+     - Elements: Dark translucent cards, subtle inner borders (`box-shadow: inset 0 1px 0 rgba(255,255,255,0.05)`), refined focus states.
+     - Accents: Muted primary accents (e.g., soft violet or indigo) with high contrast white text.
+   - **stripe-saas** (Premium SaaS / Stripe-esque):
+     - Background: Sophisticated ivory, stark white, or deep navy.
+     - Layout: High negative space, quiet typography, clean cards with soft, large diffused shadows (`box-shadow: 0 20px 40px rgba(0,0,0,0.04)`).
+     - Accents: Refined serif accents for headings, with highly accessible and commercial sans-serif body text.
 
-5. **Zip Generated Deliverables**:
+8. **Zip Generated Deliverables**:
    Once all files (such as HTML pages, copy files, layouts, schemas, configs) are generated in `<screen_dir>`, compress them into a single ZIP archive named `project_assets.zip` inside `<screen_dir>`. 
    Exclude configuration/meta files like `01_start.html`, `06_showcase.html` and `project_assets.zip` itself.
    
@@ -211,15 +205,22 @@ When generating any digital product (especially if the user aims to sell it):
    python3 -c "import zipfile, os; zf = zipfile.ZipFile('<screen_dir>/project_assets.zip', 'w'); [zf.write(os.path.join('<screen_dir>', f), f) for f in os.listdir('<screen_dir>') if f not in ('01_start.html', '06_showcase.html', 'project_assets.zip')]; zf.close()"
    ```
 
-6. **Visual QA Verification (Anti-Unstyled Prevention)**:
-   To prevent unstyled pages (e.g., raw text on white background due to missing styles or incorrect CSS linking):
-   - Check `<state_dir>/server-info` to find the current companion server port.
-   - Run the headless browser capture script to screenshot the main generated file (e.g., `index.html`):
-     `node /Users/heavn/.gemini/config/skills/create/scripts/capture-screen.js http://localhost:<port>/screens/index.html <screen_dir>/visual_qa.png 1500`
-   - Use the `view_file` tool to examine `visual_qa.png` and confirm that all styling tokens, colors, layouts, and background rules render properly.
-   - If the page looks unstyled, raw, or broken, self-repair the generated CSS and HTML immediately and re-verify until it is premium.
+9. **Logical QA & Verification**:
+   - Leverage the `test-driven-development` skill to write and run unit tests for complex business logic.
+   - For JS/React/NextJS apps, attempt to build the code (`npm run build`) or lint it (`npx eslint .`). If errors are caught, utilize the `systematic-debugging` skill to deeply analyze, diagnose, and fix the codebase before re-running.
 
-7. **Generate Showcase HTML (`06_showcase.html`)**:
+10. **Visual QA Verification (Anti-Unstyled Prevention)**:
+    - Check `<state_dir>/server-info` to find the current companion server port.
+    - Run the headless browser capture script to screenshot the main generated file (e.g., `index.html`):
+      `node /Users/heavn/.gemini/config/skills/create/scripts/capture-screen.js http://localhost:<port>/screens/index.html <screen_dir>/visual_qa.png 1500`
+    - Use the `view_file` tool to examine `visual_qa.png` and confirm that all styling tokens, colors, layouts, and background rules render properly.
+    - If the page looks unstyled or broken, instantly deploy the `systematic-debugging` skill to diagnose the root CSS/pathing issue and re-verify until it is premium.
+
+11. **Final Delivery & Verification**:
+    - Invoke the `verification-before-completion` skill to ensure every single requirement from the inline brief and generated plan has been met flawlessly.
+    - If working within a Git repository, use `requesting-code-review` to prepare a PR-ready diff, and `receiving-code-review` to handle user feedback. Finally, use `finishing-a-development-branch` to cleanly wrap up the Git worktree.
+
+12. **Generate Showcase HTML (`06_showcase.html`)**:
    - Write a beautifully styled showcase page. It must render:
      - The product name, outcome, tagline, and pricing stack.
      - A modular representation of the product architecture (clickable cards, list items).
@@ -238,10 +239,11 @@ When generating any digital product (especially if the user aims to sell it):
        - A JS click handler that calls:
          `window.submitEvent({ action: "deploy" })`
          and displays a loader saying: *"Generating Claude Code Prompts..."*
-   - Write this HTML file to `<screen_dir>/06_showcase.html` (and delete `01_start.html`).
+   - Write this HTML file to `<screen_dir>/06_showcase.html` (and delete `01_start.html` or `02_inline_wizard.html` if they exist to keep the directory clean).
    - The user's browser will automatically refresh to show the final product layout with the ZIP download button.
+   - **Persistent Memory Save**: Write or update `/Users/heavn/.gemini/antigravity/create_memory.json` with the newly generated or selected preferences (stack, colors, brand voice) so you can learn for next time.
 
-8. **Continuous Refinement Loop**:
+13. **Continuous Refinement Loop**:
    - Immediately after writing the showcase, start the background event watcher again:
      `python3 /Users/heavn/.gemini/config/skills/create/scripts/await-event.py <state_dir>/events 300`
    - Stop calling tools and go idle.

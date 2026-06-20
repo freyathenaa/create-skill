@@ -1,16 +1,18 @@
 <div align="center">
 
-# 🪄 create
-### **Autonomous Digital Product Synthesizer for Antigravity**
+<img src="./assets/banner.png" alt="create branding banner" width="600" style="border-radius: 12px; margin-bottom: 24px;" />
 
-*From command to product. No templates. No compromise.*
+# create
+### **The Intelligent Design & Development Tool for Antigravity AI**
+
+*Synthesize production-ready digital products and environments directly from a prompt. Zero templates. Zero compromise.*
 
 <br/>
 
-[![Version](https://img.shields.io/badge/skill-v2.0-c4a482?style=for-the-badge&labelColor=070709)](https://github.com/freyathenaa/create-skill)&nbsp;
-[![Antigravity](https://img.shields.io/badge/Powered%20By-Antigravity%20AI-8B5CF6?style=for-the-badge&labelColor=070709)](https://github.com/freyathenaa)&nbsp;
-[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-4ade80?style=for-the-badge&labelColor=070709)](https://nodejs.org)&nbsp;
-[![Python](https://img.shields.io/badge/Python-3.x-60a5fa?style=for-the-badge&labelColor=070709)](https://python.org)
+[![Version](https://img.shields.io/badge/version-6.0.0-007AFF?style=for-the-badge&labelColor=0A0A0C)](https://github.com/freyathenaa/create-skill)&nbsp;
+[![Antigravity](https://img.shields.io/badge/Powered%20By-Antigravity%20AI-8B5CF6?style=for-the-badge&labelColor=0A0A0C)](https://github.com/freyathenaa)&nbsp;
+[![Aesthetic](https://img.shields.io/badge/Aesthetics-Apple%20%2F%20Geist%20%2F%20Linear-000000?style=for-the-badge&labelColor=0A0A0C)](#design-aesthetics)&nbsp;
+[![PWA](https://img.shields.io/badge/PWA-Ready-10B981?style=for-the-badge&labelColor=0A0A0C)](#synthesis-stack)
 
 <br/>
 
@@ -18,177 +20,105 @@
 
 </div>
 
-## What Is This?
+## What is create?
 
-`/create` is an Antigravity agent skill that turns a single command into a complete, premium digital product — landing pages, IDEs, SaaS interfaces, courses, dashboards, Jarvis AI panels, games, and more.
+`create` is an autonomous engineering pipeline that translates a single prompt or visual briefing into high-fidelity, interactive digital products. Whether generating a minimalist SaaS dashboard, a retro blog, a holographic AI interface, or a developer IDE workspace, the agent handles the planning, coding, unit testing, visual QA, and deliverable bundling.
 
-It operates in two modes:
+It operates in two entry modes:
 
-| Mode | How to trigger | What happens |
-|:---|:---|:---|
-| **Inline Brief** | `/create an IDE that manages token usage...` | Skips the wizard entirely. Your description is parsed as a brief and synthesized immediately into a product. |
-| **Visual Wizard** | `/create` | Launches an interactive visual companion in your browser. You select the product type, aesthetic, and market trend — the agent builds the rest. |
-
----
-
-## Invocation Examples
-
-```bash
-# Inline mode — no wizard, direct generation
-/create an IDE that assists in managing token usage. Users can manage a
-system prompt, configure individual agent instructions, set the number of
-agents, and log in to existing providers.
-
-# Wizard mode — opens interactive browser UI
-/create
-```
-
-When using inline mode, the agent automatically:
-- Parses your description into a **creator brief** (brand name, goals, problem, scope)
-- Selects the best matching **category**, **design style**, and **market trend**
-- Generates files, zips deliverables, runs a visual QA check, and presents a showcase
-
----
-
-## Workflow
-
-```mermaid
-flowchart TD
-    A(["/create &lt;text&gt;"]) -->|Inline Brief| B[Parse brief from description]
-    A2(["/create"]) -->|Plain invoke| C[Start Visual Companion Server]
-
-    B --> D[Auto-select Category · Style · Trend]
-    C --> E[Open Wizard in browser]
-
-    E --> F{Mode selection}
-    F -->|Interactive Wizard| G[Pick Category / Style / Trend]
-    F -->|Custom Creator Brief| H[Fill in goals · problem · scope]
-    F -->|Fully Random| I[AI picks trending config]
-
-    D --> J
-    G --> J
-    H --> J
-    I --> J
-
-    J[Synthesize product files] --> K[Visual QA — Puppeteer capture]
-    K --> L[Package ZIP deliverables]
-    L --> M([Showcase + Download page])
-
-    style A fill:#c4a482,color:#000,stroke:none
-    style A2 fill:#8B5CF6,color:#fff,stroke:none
-    style M fill:#10B981,color:#fff,stroke:none
-    style J fill:#1e1f2e,color:#c4a482,stroke:#c4a482
-```
-
----
-
-## Product Categories
-
-The agent can generate any of the following product types:
-
-| Category | Description |
-|:---|:---|
-| `saas` | Landing page, API schema, database schema, payment flow |
-| `blog` | Neocities-style personal webspace with retro UI |
-| `course` | 5–8 module learning experience with worksheets |
-| `ebook` | Chapter guides, conversion funnel, introductory hook |
-| `dashboard` | Responsive telemetry grids and data visualization |
-| `plugin` | Chrome Extension MV3, VS Code config, or Figma plugin |
-| `game` | HTML Canvas arcade, WebGL shader, or text adventure |
-| `planner` | Content calendars, marketing workflows, product pipelines |
-| `wellness` | Nutrition schedulers, fitness splits, mindfulness loops |
-| `jarvis` | Holographic browser-based AI control panel |
-| `ide` | Interactive browser-based multi-agent developer workspace |
+*   **Inline Brief Mode**: Intercepts prompts (e.g. `/create a token management console...`), runs an interactive browser-based clarifying wizard, and synthesizes the workspace directly.
+*   **Visual Curation Wizard**: Initiated with `/create`. Boots the Visual Companion Server and guides the creator through visual styling, technology stack, and backend provisioning options.
 
 ---
 
 ## Design Aesthetics
 
-Each generated product is rendered in a curated visual style:
+All synthesized projects adhere to refined, modern, and industry-standard design specifications. There are no generic, unstyled browser defaults or retro themes.
 
-<table>
-<tr>
-<td><strong>y2k</strong> — Frutiger Metro · Web 2.0 Gloss</td>
-<td><strong>retro-console</strong> — Japanese 3D · Gaming HUD</td>
-</tr>
-<tr>
-<td><strong>claymorphic</strong> — Tactile Clay · Inflated Shapes</td>
-<td><strong>crt-radio</strong> — VFD Screen · Post-Apocalyptic</td>
-</tr>
-<tr>
-<td><strong>frutiger-aero</strong> — Glossy Aqua · Skeuomorphism</td>
-<td><strong>vaporwave</strong> — 90s Glitch · Retrowave Lounge</td>
-</tr>
-<tr>
-<td><strong>cyber-goth</strong> — Neon Obsidian · Circuit Grid</td>
-<td><strong>gothic-grunge</strong> — Medieval Parchment · Ink Splatter</td>
-</tr>
-</table>
+| Theme | Visual Language | Typography & Details |
+| :--- | :--- | :--- |
+| **🍏 Apple HIG** | Clean whites or OLED blacks, backdrop blur layers, generous whitespace. | SF Pro Display, soft translucent overlays, large rounded cards (16px–24px). |
+| **▲ Geist Minimal** | High-contrast monochrome (pure black/white), strict structural layouts. | Inter/Geist Mono, ultra-thin borders (1px), sharp elements (6px–8px radii). |
+| **🌌 Linear Dark** | Deep technical dark mode (`#0E0F11`), subtle gradient highlights, high precision. | Custom iconography, dark translucent panels, micro-shadows, violet accents. |
+| **💳 Stripe SaaS** | Sophisticated ivory or deep navy panels, large diffused drop shadows, high trust. | Refined editorial serif headings paired with clean sans-serif body text. |
 
 ---
 
-## Project Structure
+## Architecture & Workflow
 
-The project is structured as follows:
+`create` behaves like a complete engineering team using a strict state machine:
 
-| Path | Description |
-| :--- | :--- |
-| **`SKILL.md`** | System prompts, instructions, and integration workflow for the Antigravity agent |
-| **`scripts/start-server.js`** | Express-based web server hosting the interactive companion wizard |
-| **`scripts/await-event.py`** | Python script coordinating background event watching and synchronization |
-| **`scripts/capture-screen.js`** | Puppeteer automation script for headless browser screenshots and visual QA |
-| **`templates/01_start.html`** | HTML base template for the visual wizard dashboard |
-| **`templates/jarvis-template.html`** | Holographic base layout for generated Jarvis panels |
-| **`templates/jarvis-template.css`** | Aesthetic and style tokens for Jarvis panels |
-| **`templates/ide-template.html`** | HTML template for generated IDE developer workspaces |
-| **`templates/ide-template.css`** | Layout and aesthetic styles for the IDE workspaces |
-| **`package.json`** | Project metadata and dependency configuration |
-| **`README.md`** | Documentation and setup guide |
+```mermaid
+flowchart TD
+    A(["/create &lt;prompt&gt;"]) -->|Inline Brief| B[Parse brief & prompt questions]
+    A2(["/create"]) -->|Wizard invoke| C[Start Visual Companion Server]
 
----
+    B --> D[Open Inline Wizard & Gather Answers]
+    C --> E[Open Visual Dashboard in Browser]
 
-## Stack
+    D --> F[Synthesize Config Bundle]
+    E --> F
 
-| Layer | Technology | Purpose |
-|:---|:---|:---|
-| **Server** | Node.js + Express | Hosts wizard pages, receives event payloads |
-| **Event Sync** | Python 3 | Blocks/unblocks agent on user wizard input |
-| **Visual QA** | Puppeteer (Chromium) | Headless screenshot capture for styling validation |
-| **Styling** | Vanilla CSS | Premium design tokens, no framework dependencies |
+    F --> G[Multi-Agent Planning & Subagent Dispatching]
+    G --> H[Code Synthesis & Atomic File Writing]
+    H --> I[Automated Testing & Systematic Debugging]
+    I --> J[Visual QA: Puppeteer Screenshot Checks]
+    J --> K[Asset Packaging & project_assets.zip Creation]
+    K --> L([Showcase Interface & Download Dashboard])
 
----
-
-## Installation
-
-```bash
-git clone git@github.com:freyathenaa/create-skill.git
-cd create-skill
-npm install
+    style A fill:#007AFF,color:#fff,stroke:none
+    style A2 fill:#8B5CF6,color:#fff,stroke:none
+    style L fill:#10B981,color:#fff,stroke:none
+    style G fill:#1e1f2e,color:#fff,stroke:#007AFF
 ```
 
-**Requirements:** Node.js ≥ 18, Python 3.x
+---
+
+## Product Blueprints
+
+The synthesizer supports the execution of several production-ready product classes:
+
+*   **`saas` / Web App**: Full-stack application frameworks, authentication wrappers, API routing setups, and Stripe billing integrations.
+*   **`dashboard`**: Responsive metrics grids, data graphing telemetry, and telemetry dashboards.
+*   **`ide` / Developer Workspace**: Interactive multi-agent IDE dashboards featuring Kanban task boards and simulated typing/editing panels.
+*   **`jarvis`**: Voice-activated HUD control panels with camera gesture tracking, audio synths, and command terminals.
+*   **`data-app`**: Telemetry dashboards and data visualizations powered by BigQuery or external endpoints.
+*   **`chrome-extension`**: Manifest V3 Chrome extensions pre-packaged for Web Store distribution.
+*   **`blog` / Indie Webspace**: Dual-column minimalist sites with custom guestbooks, shoutboxes, and reading layout presets.
+*   **`course` & `ebook`**: Multi-module curriculum templates, worksheets, chapters, and audience lead magnets.
 
 ---
 
-## Integration with Antigravity
+## Synthesis Stack
 
-This skill runs as part of the [Antigravity AI](https://github.com/freyathenaa) agent system. Drop the `create/` folder into your Antigravity skills directory and the `/create` slash command becomes immediately available.
+| Layer | Technologies | Role |
+| :--- | :--- | :--- |
+| **Orchestration** | Antigravity AI SDK | Execution flow, planning, and task coordination |
+| **Frameworks** | React (Vite) / Next.js / Vanilla HTML | Scaffolds application layers based on configuration |
+| **Database/Auth** | Firebase (Firestore + Auth) | Provisioned backend and security rules |
+| **Automation** | Express.js + Python | Interactive server hosting and event synchronization |
+| **Visual Validation** | Puppeteer | Headless capture and automatic path verification |
 
-Ensure the repository structure is placed in your configuration folder at:
-`~/.gemini/config/skills/create/` (containing `SKILL.md`, `scripts/`, and `templates/`).
+---
 
-The agent handles everything: server startup, wizard coordination, file generation, visual QA, and asset delivery.
+## Getting Started
+
+1. **Installation**:
+   ```bash
+   git clone git@github.com:freyathenaa/create-skill.git
+   cd create-skill
+   npm install
+   ```
+
+2. **Integration**:
+   Move the folder into your Antigravity skills path (`~/.gemini/config/skills/create/`). The slash command `/create` will instantly register.
 
 ---
 
 <div align="center">
 
-<br/>
-
 *Built for creators who ship.*
 
-[![freyathenaa](https://img.shields.io/badge/github-freyathenaa-c4a482?style=flat-square&logo=github&labelColor=070709)](https://github.com/freyathenaa)
-
-<br/>
+[![Github](https://img.shields.io/badge/github-freyathenaa-007AFF?style=flat-square&logo=github&labelColor=0A0A0C)](https://github.com/freyathenaa)
 
 </div>

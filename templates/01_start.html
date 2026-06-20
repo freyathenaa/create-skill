@@ -131,10 +131,16 @@
         <p>Author chapter guides, hook structures, and marketing funnel copies.</p>
       </div>
 
-      <div class="option-card" onclick="selectCategory('plugin', this)">
+      <div class="option-card" onclick="selectCategory('chrome-extension', this)">
         <div class="card-icon">🔌</div>
-        <h3>App Plugins & Extensions</h3>
-        <p>Manifest V3 Chrome extensions, VS Code extensions, or Figma plugins.</p>
+        <h3>Chrome Extension</h3>
+        <p>Manifest V3 Chrome extensions ready for the Web Store.</p>
+      </div>
+
+      <div class="option-card" onclick="selectCategory('data-app', this)">
+        <div class="card-icon">📈</div>
+        <h3>Data App & Dashboard</h3>
+        <p>Interactive data visualizations connected to BigQuery or APIs.</p>
       </div>
 
       <div class="option-card" onclick="selectCategory('game', this)">
@@ -210,7 +216,35 @@
  
     <div class="wizard-footer">
       <button class="btn-secondary" onclick="goToStep('category')">Back</button>
-      <button id="stack-next-btn" class="btn-primary" disabled onclick="goToStep('aesthetic')">Next: Aesthetic DNA</button>
+      <button id="stack-next-btn" class="btn-primary" disabled onclick="goToStep('backend')">Next: Cloud & Backend</button>
+    </div>
+  </div>
+
+  <!-- STEP 2C: BACKEND / CLOUD -->
+  <div id="step-backend" class="wizard-step">
+    <div class="wizard-header">
+      <span class="step-badge">Cloud Integration</span>
+      <h1>Select Backend Infrastructure</h1>
+      <p class="subtitle">Does your application need a real database and authentication?</p>
+    </div>
+
+    <div class="cards-grid cols-2">
+      <div class="option-card" onclick="selectBackend('mock', this)">
+        <div class="card-icon">📦</div>
+        <h3>Mock Data (Frontend Only)</h3>
+        <p>Keep it simple. Scaffold the UI with beautiful mock data. Best for prototypes and static sites.</p>
+      </div>
+
+      <div class="option-card" onclick="selectBackend('firebase', this)">
+        <div class="card-icon">🔥</div>
+        <h3>Firebase (Full-Stack)</h3>
+        <p>Automatically provision Firestore database, Auth UI, and security rules. Ready for production.</p>
+      </div>
+    </div>
+ 
+    <div class="wizard-footer">
+      <button class="btn-secondary" onclick="goToStep('stack')">Back</button>
+      <button id="backend-next-btn" class="btn-primary" disabled onclick="goToStep('aesthetic')">Next: Aesthetic DNA</button>
     </div>
   </div>
 
@@ -223,57 +257,33 @@
     </div>
 
     <div class="cards-grid cols-2">
-      <div class="option-card" onclick="selectStyle('y2k', this)">
-        <div class="card-icon y2k-icon">☄️</div>
-        <h3>Y2K / Frutiger Metro</h3>
-        <p>Inspired by brawlersworld & frutiger aero archive. Glossy vector stars, glassy panel layers, bubbles, techno-optimist gradients.</p>
+      <div class="option-card" onclick="selectStyle('apple-hig', this)">
+        <div class="card-icon hig-icon">🍏</div>
+        <h3>Apple HIG / iOS Minimal</h3>
+        <p>Pristine white or deep OLED black, glassmorphism layers, extreme minimalism, large bold SF Pro typography, and subtle shadows.</p>
       </div>
 
-      <div class="option-card" onclick="selectStyle('retro-console', this)">
-        <div class="card-icon console-icon">🎮</div>
-        <h3>Retro Console / JP 3D</h3>
-        <p>Inspired by burgeritchi. 90s console gaming HUD, pixel typography, CRT scanline grid overlays, isometric panel frames.</p>
+      <div class="option-card" onclick="selectStyle('vercel-geist', this)">
+        <div class="card-icon geist-icon">▲</div>
+        <h3>Geist / Developer Minimal</h3>
+        <p>High-contrast monochrome, pure structural grids, strict 1px borders, zero shadows, heavily developer-focused pure UI.</p>
       </div>
 
-      <div class="option-card" onclick="selectStyle('claymorphic', this)">
-        <div class="card-icon clay-icon">☁️</div>
-        <h3>Claymorphic / Soft 3D</h3>
-        <p>Inspired by infini. Tactile, inflated clay-like cards, play-doh buttons, pastel colors, and soft inner shadows.</p>
+      <div class="option-card" onclick="selectStyle('linear-dark', this)">
+        <div class="card-icon linear-icon">🌌</div>
+        <h3>Linear / Structural Dark</h3>
+        <p>Deep technical dark mode, subtle radial illuminations, beautiful custom iconography, dark translucent cards, soft violet accents.</p>
       </div>
 
-      <div class="option-card" onclick="selectStyle('crt-radio', this)">
-        <div class="card-icon radio-icon">📟</div>
-        <h3>CRT Radio / Dark Industrial</h3>
-        <p>Inspired by xylox & megaknecht. Glowing red/amber VFD screen, old car radio interface, fallout gothic grid, retro grunge hardware.</p>
-      </div>
-
-      <div class="option-card" onclick="selectStyle('frutiger-aero', this)">
-        <div class="card-icon aero-icon">🌿</div>
-        <h3>Frutiger Aero / Aqua Web</h3>
-        <p>Glossy glass reflections, bright lime green and sky blue gradients, floating water bubbles, and clean skeuomorphic icons.</p>
-      </div>
-
-      <div class="option-card" onclick="selectStyle('vaporwave', this)">
-        <div class="card-icon vapor-icon">🌴</div>
-        <h3>Vaporwave / Glitch Art</h3>
-        <p>Pastel pink/violet sunset gradients, wireframe grid perspectives, scanlines, CRT screen buzz, and retro palms.</p>
-      </div>
-
-      <div class="option-card" onclick="selectStyle('cyber-goth', this)">
-        <div class="card-icon goth-icon">🕸️</div>
-        <h3>Cyber-Goth / Synthwave</h3>
-        <p>Deep dark carbon/slate panels, high-contrast glowing neon magenta/cyan borders, and wireframe outlines.</p>
-      </div>
-
-      <div class="option-card" onclick="selectStyle('gothic-grunge', this)">
-        <div class="card-icon gothic-icon">🏰</div>
-        <h3>Medieval Gothic / Felvidek</h3>
-        <p>Low-res textured parchment background, heavy high-contrast black ink outlines, and raw metallic gothic frames.</p>
+      <div class="option-card" onclick="selectStyle('stripe-saas', this)">
+        <div class="card-icon stripe-icon">💳</div>
+        <h3>Premium SaaS / Editorial</h3>
+        <p>Commercial trust-building design, sophisticated typography, soft diffused shadows, high negative space, ivory and deep navy.</p>
       </div>
     </div>
  
     <div class="wizard-footer">
-      <button class="btn-secondary" onclick="goToStep('stack')">Back</button>
+      <button class="btn-secondary" onclick="goToStep('backend')">Back</button>
       <button id="aesthetic-next-btn" class="btn-primary" disabled onclick="goToStep('trend')">Next: Market Trend</button>
     </div>
   </div>
@@ -438,6 +448,7 @@
     mode: null,
     category: null,
     stack: null,
+    backend: null,
     style: null,
     trend: null,
     brief: null,
@@ -519,6 +530,16 @@
     document.querySelectorAll('#step-stack .option-card').forEach(card => card.classList.remove('selected'));
     element.classList.add('selected');
     document.getElementById('stack-next-btn').disabled = false;
+    
+    // Quick transition on click
+    setTimeout(() => goToStep('backend'), 150);
+  }
+
+  function selectBackend(backend, element) {
+    choices.backend = backend;
+    document.querySelectorAll('#step-backend .option-card').forEach(card => card.classList.remove('selected'));
+    element.classList.add('selected');
+    document.getElementById('backend-next-btn').disabled = false;
     
     // Quick transition on click
     setTimeout(() => goToStep('aesthetic'), 150);
@@ -764,6 +785,7 @@
         mode: 'random',
         category: null,
         stack: null,
+        backend: null,
         style: null,
         trend: null,
         customizerState: null
@@ -800,9 +822,11 @@
   .customizer-section {
     background: var(--panel-dark);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 20px;
     padding: 24px;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   }
 
   .customizer-section h2 {
@@ -832,9 +856,9 @@
     width: 100%;
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 16px;
     padding: 14px 16px;
-    font-family: 'Inter', sans-serif;
+    font-family: inherit;
     font-size: 15px;
     color: var(--text-main);
     outline: none;
@@ -853,13 +877,13 @@
   }
 
   .color-dot {
-    width: 30px;
-    height: 30px;
-    border-radius: 4px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
     border: 2px solid transparent;
     cursor: pointer;
     transition: transform 0.15s ease, border-color 0.15s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   }
 
   .color-dot:hover {
@@ -882,9 +906,9 @@
     display: flex;
     align-items: flex-start;
     gap: 14px;
-    background: rgba(255, 255, 255, 0.01);
+    background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 16px;
     padding: 14px 16px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -931,9 +955,10 @@
     text-align: left;
     background: var(--panel-dark);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 20px;
     padding: 32px;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
   }
 
   .brief-textarea {
@@ -941,7 +966,7 @@
     height: 100px;
     background: rgba(0, 0, 0, 0.25);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 16px;
     padding: 14px 16px;
     font-family: 'Inter', sans-serif;
     font-size: 14px;
@@ -960,7 +985,7 @@
     display: flex;
     align-items: stretch;
     gap: 0;
-    border-radius: 4px;
+    border-radius: 20px;
     overflow: hidden;
     border: 1px solid var(--border-color);
     background: rgba(255, 255, 255, 0.02);
@@ -1065,7 +1090,7 @@
     color: var(--accent-color);
     padding: 6px 12px;
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 20px;
     font-size: 10px;
     text-transform: uppercase;
     font-weight: 600;
@@ -1216,7 +1241,7 @@
   .console-box {
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 16px;
     padding: 16px 24px;
     text-align: left;
     width: 100%;
