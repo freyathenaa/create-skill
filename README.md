@@ -81,7 +81,7 @@ The synthesizer supports the execution of several production-ready product class
 *   **`saas` / Web App**: Full-stack application frameworks, authentication wrappers, API routing setups, and Stripe billing integrations.
 *   **`dashboard`**: Responsive metrics grids, data graphing telemetry, and telemetry dashboards.
 *   **`ide` / Developer Workspace**: Interactive multi-agent IDE dashboards featuring Kanban task boards and simulated typing/editing panels.
-*   **`jarvis`**: Voice-activated HUD control panels with camera gesture tracking, audio synths, and command terminals.
+*   **`jarvis`**: Voice-activated Agentic Workspace panels with camera gesture tracking, audio synths, and command terminals.
 *   **`data-app`**: Telemetry dashboards and data visualizations powered by BigQuery or external endpoints.
 *   **`chrome-extension`**: Manifest V3 Chrome extensions pre-packaged for Web Store distribution.
 *   **`blog` / Indie Webspace**: Dual-column minimalist sites with custom guestbooks, shoutboxes, and reading layout presets.
