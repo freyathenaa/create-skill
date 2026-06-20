@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{PROJECT_NAME}} - Sci-Fi HUD</title>
+  <title>{{PROJECT_NAME}} - Workspace</title>
   <!-- Google Fonts & Style Overrides -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,6 +12,9 @@
   <!-- MediaPipe Hands & Camera Utils (Dynamic Loader CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 
   <style>
     /* Injected Styling Variables */
@@ -32,7 +35,7 @@
     
     <!-- HEADER -->
     <header class="hud-header">
-      <div class="hud-title">{{PROJECT_NAME}} HUD</div>
+      <div class="hud-title">{{PROJECT_NAME}} WORKSPACE</div>
       <div class="hud-status">
         <span class="hud-status-dot"></span>
         SYSTEM STATUS: ONLINE
@@ -55,48 +58,48 @@
           <div class="reactor-core"></div>
         </div>
 
+        <div class="preset-container">
+          <div class="preset-pill active" onclick="setMode('work')">WORK</div>
+          <div class="preset-pill" onclick="setMode('night')">NIGHT</div>
+          <div class="preset-pill" onclick="setMode('stream')">STREAM</div>
+        </div>
+
         <div class="terminal-logs" id="voice-logs">
           <div class="log-entry">> Click reactor core or say "{{ASSISTANT_NAME}}, wake up" to begin...</div>
         </div>
       </div>
 
-      <!-- Quick Launch Apps Panel -->
+      <!-- Codex UI / Agent Plan Runner -->
       <div class="hud-panel" style="flex: 0.8;">
-        <div class="hud-panel-title">SYSTEM APP LAUNCHER</div>
-        <div class="telemetry-grid">
-          <div class="telemetry-item" style="cursor: pointer;" onclick="openApp('Google')">
-            <div class="telemetry-label">Browser</div>
-            <div class="telemetry-value" style="font-size: 13px;">Google Search</div>
-          </div>
-          <div class="telemetry-item" style="cursor: pointer;" onclick="openApp('YouTube')">
-            <div class="telemetry-label">Media</div>
-            <div class="telemetry-value" style="font-size: 13px;">YouTube stream</div>
-          </div>
-          <div class="telemetry-item" style="cursor: pointer;" onclick="openApp('GitHub')">
-            <div class="telemetry-label">Code Repository</div>
-            <div class="telemetry-value" style="font-size: 13px;">GitHub workspace</div>
-          </div>
-          <div class="telemetry-item" style="cursor: pointer;" onclick="openApp('Terminal')">
-            <div class="telemetry-label">Telemetry Console</div>
-            <div class="telemetry-value" style="font-size: 13px;">Diagnostic Shell</div>
-          </div>
+        <div class="hud-panel-title">AGENTIC PLAN SYSTEM</div>
+        <div style="font-family: var(--font-mono); font-size: 11px; margin-bottom: 10px; color: var(--accent-color);">ACTIVE: PLAN-20260620</div>
+        
+        <div class="plan-step done">
+          <div class="step-checkbox"></div>
+          <span>Decompose CAD Features</span>
         </div>
+        <div class="plan-step active">
+          <div class="step-checkbox"></div>
+          <span>Execute Staging Build</span>
+        </div>
+        <div class="plan-step">
+          <div class="step-checkbox"></div>
+          <span>Run Test Suite & Validation</span>
+        </div>
+        
+        <button class="approve-btn" onclick="approvePlan()">APPROVE</button>
       </div>
     </div>
 
-    <!-- CENTER COLUMN: TARGET VIEWPORT / STARS -->
+    <!-- CENTER COLUMN: TARGET VIEWPORT / 3D GLOBE -->
     <div class="hud-center" id="hud-center">
-      <!-- Background Particle Star Map Canvas (optional layout) -->
-      <canvas id="star-map-canvas" style="position: absolute; width: 100%; height: 100%; pointer-events: none; opacity: 0.15;"></canvas>
+      <!-- 3D Three.js Canvas Container -->
+      <div id="three-container" style="position: absolute; width: 100%; height: 100%; pointer-events: none; opacity: 0.8;"></div>
 
       <div style="text-align: center; z-index: 5;">
-        <div class="hud-title" style="font-size: 24px; margin-bottom: 5px;">{{ASSISTANT_NAME}} MAINFRAME v1.0</div>
-        <p style="color: var(--text-muted); font-size: 12px; font-family: var(--font-mono);">AWAITING DIRECTIVES | TARGET LOCK ENGAGED</p>
+        <div class="hud-title" style="font-size: 24px; margin-bottom: 5px;">{{ASSISTANT_NAME}} WORKSPACE</div>
+        <p style="color: var(--text-muted); font-size: 12px; font-family: var(--font-mono);">SYSTEM ACTIVE | AWAITING DIRECTIVES</p>
       </div>
-
-      <!-- Holographic Target Grid Decoration -->
-      <div style="position: absolute; width: 85%; height: 85%; border: 1px solid rgba(0, 229, 255, 0.05); border-radius: 50%; pointer-events: none; border-style: dashed;"></div>
-      <div style="position: absolute; width: 50%; height: 50%; border: 1px solid rgba(0, 229, 255, 0.03); border-radius: 50%; pointer-events: none;"></div>
     </div>
 
     <!-- RIGHT COLUMN -->
@@ -122,8 +125,30 @@
         </div>
       </div>
 
+      <!-- CAD / Vision Decomposition Panel -->
+      <div class="hud-panel" style="flex: 0.6;">
+        <div class="hud-panel-title">CAD VISION DECOMPOSITION</div>
+        <div class="cad-viewport">
+          <div class="cad-model"></div>
+        </div>
+        <div class="feature-list">
+          <div class="feature-item">
+            <span>Base Extrude</span>
+            <span class="feature-id">FID_001</span>
+          </div>
+          <div class="feature-item">
+            <span>Mounting Holes</span>
+            <span class="feature-id">FID_002</span>
+          </div>
+          <div class="feature-item">
+            <span>Chamfer Edge</span>
+            <span class="feature-id">FID_003</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Telemetry Diagnostics Panel -->
-      <div class="hud-panel" style="flex: 0.9;">
+      <div class="hud-panel" style="flex: 0.5;">
         <div class="hud-panel-title">DIAGNOSTIC TELEMETRY</div>
         <div class="telemetry-grid">
           <div class="telemetry-item">
@@ -135,12 +160,12 @@
             <div class="telemetry-value" id="ram-usage-val">32%</div>
           </div>
           <div class="telemetry-item">
-            <div class="telemetry-label">Sensor Temp</div>
-            <div class="telemetry-value" id="temp-val">42°C</div>
-          </div>
-          <div class="telemetry-item">
             <div class="telemetry-label">Ping Latency</div>
             <div class="telemetry-value" id="ping-val">12ms</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telemetry-label">Sensor Temp</div>
+            <div class="telemetry-value" id="temp-val">42°C</div>
           </div>
         </div>
       </div>
@@ -148,7 +173,7 @@
 
     <!-- FOOTER -->
     <footer class="hud-footer">
-      <div>MAINFRAME SECURITY METAPHOR: {{TREND_NAME}}</div>
+      <div>SECURITY METAPHOR: {{TREND_NAME}}</div>
       <div>COORDINATES: lat 34.0522, lon -118.2437 | LOCAL TIME: <span id="clock-display">00:00:00</span></div>
     </footer>
 
@@ -156,8 +181,10 @@
 
   <!-- Dynamic Logic JavaScript -->
   <script>
-    /* ─── WEB AUDIO SCI-FI SYNTHESIZER ─── */
+    /* ─── WEB AUDIO SCI-FI SYNTHESIZER & ANALYSER ─── */
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let analyser;
+    let micStream;
     
     function playSound(type) {
       if (audioCtx.state === 'suspended') {
@@ -233,6 +260,7 @@
       recognition.onstart = () => {
         logVoice("JARVIS: Online and listening...");
         document.getElementById('reactor-container').classList.add('listening');
+        if(!analyser) setupMicrophone();
       };
 
       recognition.onend = () => {
@@ -263,9 +291,46 @@
       if (recognition) {
         recognition.stop();
         recognition = null;
+        if(micStream) {
+          micStream.getTracks().forEach(t => t.stop());
+          micStream = null;
+          analyser = null;
+        }
       } else {
         initVoice();
       }
+    }
+    
+    async function setupMicrophone() {
+      try {
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const source = audioCtx.createMediaStreamSource(micStream);
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        source.connect(analyser);
+        monitorAudio();
+      } catch(e) {
+        console.error("Microphone access denied", e);
+      }
+    }
+
+    function monitorAudio() {
+      if(!analyser) return;
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      const update = () => {
+        if(recognition) { // Only animate when listening
+          analyser.getByteFrequencyData(dataArray);
+          let sum = 0;
+          for(let i=0; i<dataArray.length; i++) sum += dataArray[i];
+          const avg = sum / dataArray.length;
+          const scale = 1 + (avg / 256) * 0.5; // Scale up to 1.5x
+          document.querySelector('.reactor-core').style.transform = `scale(${scale})`;
+        } else {
+          document.querySelector('.reactor-core').style.transform = `scale(1)`;
+        }
+        requestAnimationFrame(update);
+      };
+      update();
     }
 
     function processCommand(cmd) {
@@ -318,6 +383,20 @@
 
       // General fallback conversation response
       speak(`Affirmative. Command recorded.`);
+    }
+
+    function setMode(mode) {
+      playSound('beep');
+      document.querySelectorAll('.preset-pill').forEach(p => p.classList.remove('active'));
+      event.target.classList.add('active');
+      logVoice(`Activating ${mode.toUpperCase()} preset...`);
+      speak(`${mode} mode initialized.`);
+    }
+
+    function approvePlan() {
+      playSound('sweep');
+      logVoice("Staging build approved. Commencing deployment...");
+      speak("Deployment authorized.");
     }
 
     function openApp(name) {
@@ -493,45 +572,44 @@
       }
     }
 
-    /* ─── BACKGROUND PARTICLES STAR MAP ─── */
-    const starCanvas = document.getElementById('star-map-canvas');
-    const starCtx = starCanvas.getContext('2d');
-    let stars = [];
+    /* ─── THREE.JS 3D WIREFRAME GLOBE ─── */
+    let scene, camera, renderer, globe;
+    function initThreeJS() {
+      const container = document.getElementById('three-container');
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(45, container.offsetWidth / container.offsetHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setSize(container.offsetWidth, container.offsetHeight);
+      container.appendChild(renderer.domElement);
 
-    function initStars() {
-      starCanvas.width = starCanvas.offsetWidth;
-      starCanvas.height = starCanvas.offsetHeight;
-      stars = [];
-      for (let i = 0; i < 60; i++) {
-        stars.push({
-          x: Math.random() * starCanvas.width,
-          y: Math.random() * starCanvas.height,
-          radius: Math.random() * 2,
-          speed: Math.random() * 0.5 + 0.1
-        });
-      }
-      animateStars();
-    }
+      const geometry = new THREE.IcosahedronGeometry(1.8, 2);
+      const material = new THREE.MeshBasicMaterial({ 
+        color: 0xffffff, 
+        wireframe: true, 
+        transparent: true, 
+        opacity: 0.15
+      });
+      globe = new THREE.Mesh(geometry, material);
+      scene.add(globe);
 
-    function animateStars() {
-      starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
-      starCtx.fillStyle = 'rgba(0, 229, 255, 0.4)';
-      for (const star of stars) {
-        starCtx.beginPath();
-        starCtx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-        starCtx.fill();
-        star.y += star.speed;
-        if (star.y > starCanvas.height) {
-          star.y = 0;
-          star.x = Math.random() * starCanvas.width;
-        }
-      }
-      requestAnimationFrame(animateStars);
+      camera.position.z = 4;
+
+      const animate = function () {
+        requestAnimationFrame(animate);
+        globe.rotation.x += 0.002;
+        globe.rotation.y += 0.005;
+        renderer.render(scene, camera);
+      };
+      animate();
     }
 
     window.addEventListener('resize', () => {
-      starCanvas.width = starCanvas.offsetWidth;
-      starCanvas.height = starCanvas.offsetHeight;
+      if(camera && renderer) {
+        const container = document.getElementById('three-container');
+        camera.aspect = container.offsetWidth / container.offsetHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.offsetWidth, container.offsetHeight);
+      }
     });
 
     /* ─── AUXILIARY ─── */
@@ -542,7 +620,7 @@
     }, 1000);
 
     // Initial load
-    initStars();
+    initThreeJS();
   </script>
 </body>
 </html>
