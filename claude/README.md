@@ -27,7 +27,7 @@ The core difference: in Claude Desktop the agent's shell is a sandboxed Linux wo
 It operates in three entry modes:
 
 *   **Inline Brief** — `/create a token management console...`: asks only the few clarifying questions it needs via `AskUserQuestion`, then builds.
-*   **Guided Wizard** — a plain `/create`: gathers category, style, positioning, stack, and branding through `AskUserQuestion`.
+*   **Guided Wizard** — a plain `/create`: renders an interactive visual form (via `show_widget`) whose **Generate** button submits your picks back to Claude; falls back to `AskUserQuestion` if the visual tools aren't available.
 *   **Surprise Me** — a wizard option that randomizes every choice and builds immediately.
 
 Results are delivered as an interactive **showcase artifact** plus the source files and a `project_assets.zip`, presented as downloadable cards.
@@ -91,16 +91,17 @@ flowchart TD
 claude/
 ├── SKILL.md                  # the Claude Desktop skill instructions
 ├── README.md                 # this file
-├── package.json              # puppeteer dependency for visual QA
+├── package.json              # puppeteer dependency for optional visual QA
 ├── scripts/
-│   └── capture-screen.js     # headless screenshot for QA (works against file:// URLs)
+│   └── capture-screen.js     # optional headless screenshot for QA (works against file:// URLs)
 └── templates/
+    ├── wizard-widget.html     # the visual wizard form (rendered via show_widget)
     ├── jarvis-template.html / .css
     ├── ide-template.html / .css
     └── retro-components.css
 ```
 
-The legacy `start-server.js` and `await-event.py` (browser-wizard / event loop) are **not** included here — `AskUserQuestion` and Cowork artifacts replace them. They remain in the Antigravity edition at the repo root.
+The legacy `start-server.js` and `await-event.py` (browser-wizard / event loop) are **not** included here — the `show_widget` wizard, `AskUserQuestion`, and Cowork artifacts replace them. They remain in the Antigravity edition at the repo root. The Puppeteer screenshot is now best-effort: if a launchable Chromium isn't available (common in sandboxes), the skill auto-falls back to a code/well-formedness review and still delivers.
 
 ---
 

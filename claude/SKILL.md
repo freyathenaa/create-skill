@@ -46,20 +46,35 @@ Always write generated files under `<work_dir>`. Never write to a hardcoded path
 
 ---
 
-## Step 1 — Gather the brief with AskUserQuestion
+## Step 1 — Gather the brief (visual wizard, with fallback)
 
 First, **load `<memory_file>`** if it exists (`Read`) to pre-fill sensible defaults.
 
-Then ask with `AskUserQuestion`. Batch related questions into as few calls as possible (the tool allows up to 4 questions per call, 2–4 options each). Recommended questions — include a **"Surprise me"** option on the first:
+### 1a. Preferred: the visual wizard (`show_widget`)
 
-1. **Category** — `blog`, `saas`, `course`, `ebook`, `chrome-extension`, `data-app`, `game`, `dashboard`, `planner`, `wellness`, `jarvis`, `ide`. (Add a "Surprise me — randomize everything" option here.)
+This is the native "visual assistant" — a rendered form the user clicks through, whose submission flows back to you automatically. No server, no event loop.
+
+1. If you haven't already this session, call `mcp__visualize__read_me` with module `elicitation` (do this silently — don't narrate it).
+2. `Read` `<skill_dir>/templates/wizard-widget.html` and pass its **full contents** as the `widget_code` argument to `mcp__visualize__show_widget` (give it a `title` like `create_wizard`).
+3. The form's **Generate** button auto-submits the user's picks back to you as your **next chat message**, on one line, e.g.:
+   `Product details — Category: blog · Style: apple-hig · Trend: solopreneur · Stack: nextjs`
+   Parse that line into `category`, `style`, `trend`, `stack`, and `project_name` (if present). Then **stop asking and synthesize** — never re-ask what the form already answered.
+4. If `Category: surprise`, or the form was skipped (`(Skipped the form …)`), or a field is missing: **randomize** the missing dimensions and proceed.
+
+### 1b. Fallback: `AskUserQuestion`
+
+If the visualize tools aren't available, or `show_widget` fails, or the user prefers plain chat, gather the **same fields** with `AskUserQuestion` (batch up to 4 questions per call, 2–4 options each; include a **"Surprise me — randomize everything"** option on the first):
+
+1. **Category** — `blog`, `saas`, `course`, `ebook`, `chrome-extension`, `data-app`, `game`, `dashboard`, `planner`, `wellness`, `jarvis`, `ide`.
 2. **Design style** — `apple-hig`, `vercel-geist`, `linear-dark`, `stripe-saas`.
 3. **Positioning / trend** — `ai-agents`, `solopreneur`, `local-first`, `zero-bloat`, `privacy-first`, `micro-community`.
 4. **Stack** — `vanilla` (HTML+PWA), `react` (Vite), `nextjs`, `data-app`.
 
-Follow up in a second call for **project name** and **accent color** (offer a few on-palette swatches plus "Other" for a custom hex). For `jarvis`/`ide`, also ask which **modules** to include (e.g. gestures, voice, terminal, diagnostics for Jarvis; researcher, architect, coder, tester, planner for IDE).
+### 1c. Either path — finish the config
 
-If the user picked **Surprise me**, randomly select one value per dimension, invent a project name + accent color, enable all default modules, and proceed without further questions.
+Follow up (a second `AskUserQuestion`, or just pick sensibly) for **project name** and **accent color**. For `jarvis`/`ide`, also determine which **modules** to include (gestures, voice, terminal, diagnostics for Jarvis; researcher, architect, coder, tester, planner for IDE).
+
+If **Surprise me**: randomly select one value per dimension, invent a project name + accent color, enable all default modules, and proceed without further questions.
 
 Record the resulting config: `projectName`, `category`, `style`, `trend`, `stack`, `accentColor`, `modules[]`, and (inline mode) the parsed `brief`.
 
@@ -123,15 +138,38 @@ python3 -c "import zipfile, os, sys; d=sys.argv[1]; zf=zipfile.ZipFile(os.path.j
 
 ---
 
-## Step 5 — Visual QA (sandbox, no server)
+## Step 5 — Visual QA (best-effort; never blocks delivery)
 
-Render the page from a `file://` URL — Puppeteer loads static files directly, so no localhost is needed:
+The user's real visual check is the **artifact/widget** you render in Step 6 — that always works in Claude Desktop. So treat the headless screenshot as an optional bonus for *your own* inspection, never a gate on delivery.
 
-```bash
-node <skill_dir>/scripts/capture-screen.js "file://<work_dir>/index.html" "<work_dir>/visual_qa.png" 1500
-```
+1. **Primary check (always works).** Self-review the generated code: confirm the HTML is well-formed (matching tags, no stray closers), the design tokens and `accentColor` are actually applied, required sections exist, and there are no obvious layout/CSS errors. A quick automated well-formedness check is a good proxy, e.g.:
+   ```bash
+   python3 - <<'PY'
+   from html.parser import HTMLParser
+   import sys
+   VOID={'meta','link','br','hr','img','input','source','area','base','col','embed','param','track','wbr'}
+   s=open(sys.argv[1] if len(sys.argv)>1 else 'index.html',encoding='utf-8').read()
+   st=[];err=[]
+   class P(HTMLParser):
+     def handle_starttag(self,t,a):
+       if t not in VOID: st.append(t)
+     def handle_endtag(self,t):
+       if t in VOID: return
+       if st and st[-1]==t: st.pop()
+       elif t in st:
+         while st and st.pop()!=t: pass
+       else: err.append(t)
+   P().feed(s); print('unclosed:',st[-5:] or 'none','| stray:',err[:5] or 'none')
+   PY
+   ```
+2. **Optional screenshot (only if a launchable Chromium exists).** Puppeteer loads static files from a `file://` URL, so no server is needed:
+   ```bash
+   node <skill_dir>/scripts/capture-screen.js "file://<work_dir>/index.html" "<work_dir>/visual_qa.png" 1500
+   ```
+   Then `Read` `visual_qa.png` and confirm styling. **Chromium is frequently unavailable** in sandboxes (minimal Linux, wrong CPU arch, missing shared libraries, no `apt`). If launch fails, you may try **once** to provision it (`npm install` in `<skill_dir>`, or `npx --yes puppeteer browsers install chrome-headless-shell`); if it still won't launch, **automatically fall back to the primary check in step 1 and continue.** Never let a missing browser stop or delay the delivery, and don't make the user wait on a long Chromium download.
+3. **Stack build checks.** For `react`/`nextjs`, also attempt `npm run build` / `npx eslint .` and fix errors before continuing.
 
-If Puppeteer/Chromium isn't installed in the sandbox, run `npm install` in `<skill_dir>` (it fetches Chromium) or fall back to a careful code/style review. Then **`Read` `visual_qa.png`** and confirm styling, colors, layout, and backgrounds render correctly. If it looks unstyled or broken, diagnose the CSS/path issue, fix, and re-capture until premium. For `react`/`nextjs`, also attempt `npm run build` / `npx eslint .` and fix errors before continuing.
+If anything looks unstyled or broken in either check, diagnose the CSS/path issue, fix, and re-verify until premium.
 
 ---
 
