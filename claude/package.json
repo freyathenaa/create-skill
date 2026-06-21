@@ -1,0 +1,22 @@
+{
+  "name": "create-claude",
+  "version": "1.0.0",
+  "description": "Create — Claude Desktop / Cowork edition. Generates premium digital products via AskUserQuestion and delivers them as a Cowork artifact plus downloadable files.",
+  "main": "scripts/capture-screen.js",
+  "scripts": {
+    "qa": "node scripts/capture-screen.js"
+  },
+  "keywords": [
+    "claude",
+    "cowork",
+    "skill",
+    "digital-products",
+    "generator"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "puppeteer": "^25.1.0"
+  }
+}
