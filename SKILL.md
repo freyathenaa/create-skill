@@ -28,7 +28,7 @@ Trigger this skill when the user runs `/create` or requests to "generate a rando
 
 ```bash
 # Launch the Visual Companion Server
-node /Users/heavn/.claude/skills/create/scripts/start-server.js --project-dir /Users/heavn/.claude/scratch --open
+node /Users/heavn/.gemini/config/skills/create/scripts/start-server.js --project-dir /Users/heavn/.gemini/antigravity/scratch --open
 ```
 
 Capture the `screen_dir` and `state_dir` paths from the returned JSON.
@@ -49,13 +49,13 @@ If the user invokes `/create` with **accompanying text** (i.e., a description or
 ### Step 1b: Inline Brief — Serve Dynamic Wizard
 
 1. Run the server startup command:
-   `node /Users/heavn/.claude/skills/create/scripts/start-server.js --project-dir /Users/heavn/.claude/scratch --open`
+   `node /Users/heavn/.gemini/config/skills/create/scripts/start-server.js --project-dir /Users/heavn/.gemini/antigravity/scratch --open`
 2. Parse `screen_dir` and `state_dir` from the returned JSON.
-3. Copy `/Users/heavn/.claude/skills/create/templates/02_inline_wizard.html` to `<screen_dir>/02_inline_wizard.html`. Open it and inject your 3-4 generated clarifying questions into the `#questions-container` div as HTML inputs, ensuring the submit button captures them and calls `window.submitEvent({ action: "inline_answers", answers: [...] })`.
+3. Copy `/Users/heavn/.gemini/config/skills/create/templates/02_inline_wizard.html` to `<screen_dir>/02_inline_wizard.html`. Open it and inject your 3-4 generated clarifying questions into the `#questions-container` div as HTML inputs, ensuring the submit button captures them and calls `window.submitEvent({ action: "inline_answers", answers: [...] })`.
 4. Inform the user that the dynamic wizard is ready in their browser.
 5. **Start the background event watcher**:
    Run the following command as a background task (using the `Bash` tool with `run_in_background: true`):
-   `python3 /Users/heavn/.claude/skills/create/scripts/await-event.py <state_dir>/events 300`
+   `python3 /Users/heavn/.gemini/config/skills/create/scripts/await-event.py <state_dir>/events 300`
 6. Stop calling tools. The system will automatically wake you up when the background watcher completes (once the user submits their answers in the dynamic wizard).
 
 ---
@@ -65,17 +65,17 @@ If the user invokes `/create` with **accompanying text** (i.e., a description or
 When this skill is triggered **without inline text**, execute the following state machine step-by-step:
 
 ### Step 1: Start the Visual Companion Server & Wait for Wizard
-1. **Persistent Memory Load**: Check for `/Users/heavn/.claude/create_memory.json`. If it exists, read it using `Read` to load the user's historical preferences (e.g., preferred stack, colors, tone).
+1. **Persistent Memory Load**: Check for `/Users/heavn/.gemini/antigravity/create_memory.json`. If it exists, read it using `Read` to load the user's historical preferences (e.g., preferred stack, colors, tone).
 2. Run the server startup command using `node`:
-   `node /Users/heavn/.claude/skills/create/scripts/start-server.js --project-dir /Users/heavn/.claude/scratch --open`
+   `node /Users/heavn/.gemini/config/skills/create/scripts/start-server.js --project-dir /Users/heavn/.gemini/antigravity/scratch --open`
 2. Parse the returned JSON to extract:
-   - `screen_dir` (e.g. `/Users/heavn/.claude/scratch/.superpowers/brainstorm/session_1234/content`)
-   - `state_dir` (e.g. `/Users/heavn/.claude/scratch/.superpowers/brainstorm/session_1234/state`)
-3. Copy `/Users/heavn/.claude/skills/create/templates/01_start.html` to `<screen_dir>/01_start.html`.
+   - `screen_dir` (e.g. `/Users/heavn/.gemini/antigravity/scratch/.superpowers/brainstorm/session_1234/content`)
+   - `state_dir` (e.g. `/Users/heavn/.gemini/antigravity/scratch/.superpowers/brainstorm/session_1234/state`)
+3. Copy `/Users/heavn/.gemini/config/skills/create/templates/01_start.html` to `<screen_dir>/01_start.html`.
 4. Inform the user that the server has started and the visual wizard is opening in their browser.
 5. **Start the background event watcher**:
    Run the following command as a background task (using the `Bash` tool with `run_in_background: true` so it continues running in the background):
-   `python3 /Users/heavn/.claude/skills/create/scripts/await-event.py <state_dir>/events 300`
+   `python3 /Users/heavn/.gemini/config/skills/create/scripts/await-event.py <state_dir>/events 300`
 6. Stop calling tools. The system will automatically wake you up when the background watcher completes (once the user submits the wizard).
 
 ### Step 2: Read Choices & Synthesize Product
@@ -151,7 +151,7 @@ When generating any digital product (especially if the user aims to sell it):
    - **planner**: Launch marketing workflows, content scheduling calendars, product ops pipelines.
    - **wellness**: Nutritional schedulers, fitness workout splits, mindfulness habit loops.
    - **jarvis**: An interactive browser-based holographic dashboard.
-     - Copy the Jarvis templates from `/Users/heavn/.claude/skills/create/templates/jarvis-template.html` and `/Users/heavn/.claude/skills/create/templates/jarvis-template.css` to `index.html` and `styles.css` inside `<screen_dir>`.
+     - Copy the Jarvis templates from `/Users/heavn/.gemini/config/skills/create/templates/jarvis-template.html` and `/Users/heavn/.gemini/config/skills/create/templates/jarvis-template.css` to `index.html` and `styles.css` inside `<screen_dir>`.
      - **Replace parameters** inside `index.html` and `styles.css`:
        - `{{PROJECT_NAME}}` -> `choices.projectName`
        - `{{ASSISTANT_NAME}}` -> `choices.customizerState.brandName || "JARVIS"`
@@ -162,7 +162,7 @@ When generating any digital product (especially if the user aims to sell it):
        - If a module is NOT present, strip out its corresponding HTML viewport node and supporting JS logic block from `index.html` (e.g. if `gestures` is disabled, omit the MediaPipe script tags and webcam feed widgets).
      - Ensure the final output page runs completely offline/client-side and uses browser APIs (Web Speech, WebRTC, AudioContext) to handle all core features.
    - **ide**: An interactive browser-based developer workspace (Agent IDE).
-     - Copy the templates from `/Users/heavn/.claude/skills/create/templates/ide-template.html` and `/Users/heavn/.claude/skills/create/templates/ide-template.css` to `index.html` and `ide-template.css` inside `<screen_dir>`.
+     - Copy the templates from `/Users/heavn/.gemini/config/skills/create/templates/ide-template.html` and `/Users/heavn/.gemini/config/skills/create/templates/ide-template.css` to `index.html` and `ide-template.css` inside `<screen_dir>`.
      - **Replace parameters** inside `index.html` and `ide-template.css`:
        - `{{PROJECT_NAME}}` -> `choices.projectName`
        - `{{ACCENT_COLOR}}` -> `choices.customizerState.accentColor`
@@ -212,7 +212,7 @@ When generating any digital product (especially if the user aims to sell it):
 10. **Visual QA Verification (Anti-Unstyled Prevention)**:
     - Check `<state_dir>/server-info` to find the current companion server port.
     - Run the headless browser capture script to screenshot the main generated file (e.g., `index.html`):
-      `node /Users/heavn/.claude/skills/create/scripts/capture-screen.js http://localhost:<port>/screens/index.html <screen_dir>/visual_qa.png 1500`
+      `node /Users/heavn/.gemini/config/skills/create/scripts/capture-screen.js http://localhost:<port>/screens/index.html <screen_dir>/visual_qa.png 1500`
     - Use the `Read` tool to examine `visual_qa.png` and confirm that all styling tokens, colors, layouts, and background rules render properly.
     - If the page looks unstyled or broken, instantly deploy the `systematic-debugging` skill to diagnose the root CSS/pathing issue and re-verify until it is premium.
 
@@ -235,21 +235,21 @@ When generating any digital product (especially if the user aims to sell it):
        - A JS click handler that calls:
          `window.submitEvent({ action: "refine", instruction: document.getElementById("edit-request-input").value })`
          and displays a premium overlay or loader saying: *"AI Agent is processing your edits... please wait, page will refresh automatically."*
-     - **A "Build with Claude Code" Button**:
+     - **A "Build with Antigravity" Button**:
        - A JS click handler that calls:
          `window.submitEvent({ action: "deploy" })`
-         and displays a loader saying: *"Generating Claude Code Prompts..."*
+         and displays a loader saying: *"Generating Antigravity Prompts..."*
    - Write this HTML file to `<screen_dir>/06_showcase.html` (and delete `01_start.html` or `02_inline_wizard.html` if they exist to keep the directory clean).
    - The user's browser will automatically refresh to show the final product layout with the ZIP download button.
-   - **Persistent Memory Save**: Write or update `/Users/heavn/.claude/create_memory.json` with the newly generated or selected preferences (stack, colors, brand voice) so you can learn for next time.
+   - **Persistent Memory Save**: Write or update `/Users/heavn/.gemini/antigravity/create_memory.json` with the newly generated or selected preferences (stack, colors, brand voice) so you can learn for next time.
 
 13. **Continuous Refinement Loop**:
    - Immediately after writing the showcase, start the background event watcher again:
-     `python3 /Users/heavn/.claude/skills/create/scripts/await-event.py <state_dir>/events 300`
+     `python3 /Users/heavn/.gemini/config/skills/create/scripts/await-event.py <state_dir>/events 300`
    - Stop calling tools and go idle.
    - When woken up by the watcher completion message, read `<state_dir>/events`:
      - If the last event logged is `{"action":"deploy"}`:
-       1. Reply to the user with a tailored markdown prompt that they can copy and paste into Claude Code. This prompt should instruct Claude to initialize the project, read the generated UI layouts, design tokens, and components from `<screen_dir>`, and scaffold out the full interactive application using the selected `choices.stack`.
+       1. Reply to the user with a tailored markdown prompt that they can copy and paste into Antigravity. This prompt should instruct Antigravity to initialize the project, read the generated UI layouts, design tokens, and components from `<screen_dir>`, and scaffold out the full interactive application using the selected `choices.stack`.
        2. Do NOT run any deployment CLI commands yourself.
      - If the last event logged is `{"action":"refine","instruction":"..."}`:
        1. Read the `instruction` string.
