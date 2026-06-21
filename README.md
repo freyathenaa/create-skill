@@ -3,14 +3,14 @@
 <img src="./assets/banner.png" alt="create branding banner" width="600" style="border-radius: 12px; margin-bottom: 24px;" />
 
 # create
-### **The Intelligent Design & Development Tool for Antigravity AI**
+### **The Intelligent Design & Development Tool for Claude**
 
 *Synthesize production-ready digital products and environments directly from a prompt. Zero templates. Zero compromise.*
 
 <br/>
 
 [![Version](https://img.shields.io/badge/version-6.0.0-007AFF?style=for-the-badge&labelColor=0A0A0C)](https://github.com/freyathenaa/create-skill)&nbsp;
-[![Antigravity](https://img.shields.io/badge/Powered%20By-Antigravity%20AI-8B5CF6?style=for-the-badge&labelColor=0A0A0C)](https://github.com/freyathenaa)&nbsp;
+[![Claude](https://img.shields.io/badge/Powered%20By-Claude-D97757?style=for-the-badge&labelColor=0A0A0C)](https://github.com/freyathenaa)&nbsp;
 [![Aesthetic](https://img.shields.io/badge/Aesthetics-Apple%20%2F%20Geist%20%2F%20Linear-000000?style=for-the-badge&labelColor=0A0A0C)](#design-aesthetics)&nbsp;
 [![PWA](https://img.shields.io/badge/PWA-Ready-10B981?style=for-the-badge&labelColor=0A0A0C)](#synthesis-stack)
 
@@ -93,7 +93,7 @@ The synthesizer supports the execution of several production-ready product class
 
 | Layer | Technologies | Role |
 | :--- | :--- | :--- |
-| **Orchestration** | Antigravity AI SDK | Execution flow, planning, and task coordination |
+| **Orchestration** | Claude Agent SDK | Execution flow, planning, and task coordination |
 | **Frameworks** | React (Vite) / Next.js / Vanilla HTML | Scaffolds application layers based on configuration |
 | **Database/Auth** | Firebase (Firestore + Auth) | Provisioned backend and security rules |
 | **Automation** | Express.js + Python | Interactive server hosting and event synchronization |
@@ -111,7 +111,7 @@ The synthesizer supports the execution of several production-ready product class
    ```
 
 2. **Integration**:
-   Move the folder into your Antigravity skills path (`~/.gemini/config/skills/create/`). The slash command `/create` will instantly register.
+   Move the folder into your Claude skills path (`~/.claude/skills/create/`). The slash command `/create` will instantly register.
 
 ---
 

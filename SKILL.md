@@ -28,7 +28,7 @@ Trigger this skill when the user runs `/create` or requests to "generate a rando
 
 ```bash
 # Launch the Visual Companion Server
-node /Users/heavn/.gemini/config/skills/create/scripts/start-server.js --project-dir /Users/heavn/.gemini/antigravity/scratch --open
+node /Users/heavn/.claude/skills/create/scripts/start-server.js --project-dir /Users/heavn/.claude/scratch --open
 ```
 
 Capture the `screen_dir` and `state_dir` paths from the returned JSON.
@@ -40,7 +40,7 @@ Capture the `screen_dir` and `state_dir` paths from the returned JSON.
 If the user invokes `/create` with **accompanying text** (i.e., a description or request follows the command), you must present a dynamic conversational wizard.
 
 1. Treat the full inline text as a **direct creator brief**.
-   *Note: If the inline text contains a URL or a local file path, you MUST use your `read_url_content` or `read_file`/`view_file` tools to ingest the content BEFORE parsing the brief. Additionally, use `search_web` and `read_url_content` tools to actively scrape live market positioning data for mentioned competitors.*
+   *Note: If the inline text contains a URL or a local file path, you MUST use your `WebFetch` or `Read` tools to ingest the content BEFORE parsing the brief. Additionally, use `WebSearch` and `WebFetch` tools to actively scrape live market positioning data for mentioned competitors.*
 2. **Context Awareness via Graphify**: If you are inside an existing codebase or the user wants to add to an existing project, run `graphify` (if the skill is available and the project is large enough) to map the existing codebase structure and schemas to ensure the generated code integrates seamlessly.
 3. **Superpowers Planning**: Use the `brainstorming` skill to explore potential product architectures and feature sets. Following that, use the `writing-plans` skill to formalize an implementation plan.
 4. Parse the description and plan to extract implied context and **generate 3-4 highly specific clarifying questions** to resolve any ambiguity (e.g., "Which LLM provider APIs are you targeting?", "Do you prefer a dark technical theme or a light minimalist theme?").
@@ -49,13 +49,13 @@ If the user invokes `/create` with **accompanying text** (i.e., a description or
 ### Step 1b: Inline Brief — Serve Dynamic Wizard
 
 1. Run the server startup command:
-   `node /Users/heavn/.gemini/config/skills/create/scripts/start-server.js --project-dir /Users/heavn/.gemini/antigravity/scratch --open`
+   `node /Users/heavn/.claude/skills/create/scripts/start-server.js --project-dir /Users/heavn/.claude/scratch --open`
 2. Parse `screen_dir` and `state_dir` from the returned JSON.
-3. Copy `/Users/heavn/.gemini/config/skills/create/templates/02_inline_wizard.html` to `<screen_dir>/02_inline_wizard.html`. Open it and inject your 3-4 generated clarifying questions into the `#questions-container` div as HTML inputs, ensuring the submit button captures them and calls `window.submitEvent({ action: "inline_answers", answers: [...] })`.
+3. Copy `/Users/heavn/.claude/skills/create/templates/02_inline_wizard.html` to `<screen_dir>/02_inline_wizard.html`. Open it and inject your 3-4 generated clarifying questions into the `#questions-container` div as HTML inputs, ensuring the submit button captures them and calls `window.submitEvent({ action: "inline_answers", answers: [...] })`.
 4. Inform the user that the dynamic wizard is ready in their browser.
 5. **Start the background event watcher**:
-   Run the following command as a background task (e.g., using `run_command` with a low `WaitMsBeforeAsync` of 500ms):
-   `python3 /Users/heavn/.gemini/config/skills/create/scripts/await-event.py <state_dir>/events 300`
+   Run the following command as a background task (using the `Bash` tool with `run_in_background: true`):
+   `python3 /Users/heavn/.claude/skills/create/scripts/await-event.py <state_dir>/events 300`
 6. Stop calling tools. The system will automatically wake you up when the background watcher completes (once the user submits their answers in the dynamic wizard).
 
 ---
@@ -65,17 +65,17 @@ If the user invokes `/create` with **accompanying text** (i.e., a description or
 When this skill is triggered **without inline text**, execute the following state machine step-by-step:
 
 ### Step 1: Start the Visual Companion Server & Wait for Wizard
-1. **Persistent Memory Load**: Check for `/Users/heavn/.gemini/antigravity/create_memory.json`. If it exists, read it using `view_file` to load the user's historical preferences (e.g., preferred stack, colors, tone).
+1. **Persistent Memory Load**: Check for `/Users/heavn/.claude/create_memory.json`. If it exists, read it using `Read` to load the user's historical preferences (e.g., preferred stack, colors, tone).
 2. Run the server startup command using `node`:
-   `node /Users/heavn/.gemini/config/skills/create/scripts/start-server.js --project-dir /Users/heavn/.gemini/antigravity/scratch --open`
+   `node /Users/heavn/.claude/skills/create/scripts/start-server.js --project-dir /Users/heavn/.claude/scratch --open`
 2. Parse the returned JSON to extract:
-   - `screen_dir` (e.g. `/Users/heavn/.gemini/antigravity/scratch/.superpowers/brainstorm/session_1234/content`)
-   - `state_dir` (e.g. `/Users/heavn/.gemini/antigravity/scratch/.superpowers/brainstorm/session_1234/state`)
-3. Copy `/Users/heavn/.gemini/config/skills/create/templates/01_start.html` to `<screen_dir>/01_start.html`.
+   - `screen_dir` (e.g. `/Users/heavn/.claude/scratch/.superpowers/brainstorm/session_1234/content`)
+   - `state_dir` (e.g. `/Users/heavn/.claude/scratch/.superpowers/brainstorm/session_1234/state`)
+3. Copy `/Users/heavn/.claude/skills/create/templates/01_start.html` to `<screen_dir>/01_start.html`.
 4. Inform the user that the server has started and the visual wizard is opening in their browser.
 5. **Start the background event watcher**:
-   Run the following command as a background task (e.g., using `run_command` with a low `WaitMsBeforeAsync` of 500ms so it continues running in the background):
-   `python3 /Users/heavn/.gemini/config/skills/create/scripts/await-event.py <state_dir>/events 300`
+   Run the following command as a background task (using the `Bash` tool with `run_in_background: true` so it continues running in the background):
+   `python3 /Users/heavn/.claude/skills/create/scripts/await-event.py <state_dir>/events 300`
 6. Stop calling tools. The system will automatically wake you up when the background watcher completes (once the user submits the wizard).
 
 ### Step 2: Read Choices & Synthesize Product
@@ -122,7 +122,7 @@ When generating any digital product (especially if the user aims to sell it):
 1. **Solve a Real Problem**: Anchor the product copywriting, feature list, and target audience around solving a specific, high-pain customer problem (e.g. automating a slow task, providing rare educational structures, saving cost).
 2. **Create a Clear Plan**: Frame the product deliverables, roadmap, and files as a complete, step-by-step solution to that problem.
 3. **Present it as a Premium Brand**: Design beautiful typography, use cohesive color palettes (applying the `customizerState.accentColor`), write converting headlines/taglines, and present the final output with a high-fidelity landing page, pricing structures, and assets package that feels premium and ready-to-sell without compromising quality.
-4. **Bespoke AI Asset Generation**: Do not rely purely on CSS-only art or placeholders. If the product would benefit from a custom logo, hero illustration, or background texture, explicitly use your `generate_image` tool to create these bespoke assets. Save them directly into `<screen_dir>` and link them in your generated code.
+4. **Bespoke AI Asset Generation**: Do not rely purely on CSS-only art or placeholders. If the product would benefit from a custom logo, hero illustration, or background texture, explicitly use your image generation tool to create these bespoke assets. Save them directly into `<screen_dir>` and link them in your generated code.
 5. **Align with Creator Brief**: If the user selected the `brief` mode, the generated copywriting (headlines, value propositions, features), layout elements, and deliverables MUST directly speak to and solve the user's specific audience problem and goals defined in `choices.brief`.
 
 #### Synthesis Workflow
@@ -151,7 +151,7 @@ When generating any digital product (especially if the user aims to sell it):
    - **planner**: Launch marketing workflows, content scheduling calendars, product ops pipelines.
    - **wellness**: Nutritional schedulers, fitness workout splits, mindfulness habit loops.
    - **jarvis**: An interactive browser-based holographic dashboard.
-     - Copy the Jarvis templates from `/Users/heavn/.gemini/config/skills/create/templates/jarvis-template.html` and `/Users/heavn/.gemini/config/skills/create/templates/jarvis-template.css` to `index.html` and `styles.css` inside `<screen_dir>`.
+     - Copy the Jarvis templates from `/Users/heavn/.claude/skills/create/templates/jarvis-template.html` and `/Users/heavn/.claude/skills/create/templates/jarvis-template.css` to `index.html` and `styles.css` inside `<screen_dir>`.
      - **Replace parameters** inside `index.html` and `styles.css`:
        - `{{PROJECT_NAME}}` -> `choices.projectName`
        - `{{ASSISTANT_NAME}}` -> `choices.customizerState.brandName || "JARVIS"`
@@ -162,7 +162,7 @@ When generating any digital product (especially if the user aims to sell it):
        - If a module is NOT present, strip out its corresponding HTML viewport node and supporting JS logic block from `index.html` (e.g. if `gestures` is disabled, omit the MediaPipe script tags and webcam feed widgets).
      - Ensure the final output page runs completely offline/client-side and uses browser APIs (Web Speech, WebRTC, AudioContext) to handle all core features.
    - **ide**: An interactive browser-based developer workspace (Agent IDE).
-     - Copy the templates from `/Users/heavn/.gemini/config/skills/create/templates/ide-template.html` and `/Users/heavn/.gemini/config/skills/create/templates/ide-template.css` to `index.html` and `ide-template.css` inside `<screen_dir>`.
+     - Copy the templates from `/Users/heavn/.claude/skills/create/templates/ide-template.html` and `/Users/heavn/.claude/skills/create/templates/ide-template.css` to `index.html` and `ide-template.css` inside `<screen_dir>`.
      - **Replace parameters** inside `index.html` and `ide-template.css`:
        - `{{PROJECT_NAME}}` -> `choices.projectName`
        - `{{ACCENT_COLOR}}` -> `choices.customizerState.accentColor`
@@ -212,8 +212,8 @@ When generating any digital product (especially if the user aims to sell it):
 10. **Visual QA Verification (Anti-Unstyled Prevention)**:
     - Check `<state_dir>/server-info` to find the current companion server port.
     - Run the headless browser capture script to screenshot the main generated file (e.g., `index.html`):
-      `node /Users/heavn/.gemini/config/skills/create/scripts/capture-screen.js http://localhost:<port>/screens/index.html <screen_dir>/visual_qa.png 1500`
-    - Use the `view_file` tool to examine `visual_qa.png` and confirm that all styling tokens, colors, layouts, and background rules render properly.
+      `node /Users/heavn/.claude/skills/create/scripts/capture-screen.js http://localhost:<port>/screens/index.html <screen_dir>/visual_qa.png 1500`
+    - Use the `Read` tool to examine `visual_qa.png` and confirm that all styling tokens, colors, layouts, and background rules render properly.
     - If the page looks unstyled or broken, instantly deploy the `systematic-debugging` skill to diagnose the root CSS/pathing issue and re-verify until it is premium.
 
 11. **Final Delivery & Verification**:
@@ -241,11 +241,11 @@ When generating any digital product (especially if the user aims to sell it):
          and displays a loader saying: *"Generating Claude Code Prompts..."*
    - Write this HTML file to `<screen_dir>/06_showcase.html` (and delete `01_start.html` or `02_inline_wizard.html` if they exist to keep the directory clean).
    - The user's browser will automatically refresh to show the final product layout with the ZIP download button.
-   - **Persistent Memory Save**: Write or update `/Users/heavn/.gemini/antigravity/create_memory.json` with the newly generated or selected preferences (stack, colors, brand voice) so you can learn for next time.
+   - **Persistent Memory Save**: Write or update `/Users/heavn/.claude/create_memory.json` with the newly generated or selected preferences (stack, colors, brand voice) so you can learn for next time.
 
 13. **Continuous Refinement Loop**:
    - Immediately after writing the showcase, start the background event watcher again:
-     `python3 /Users/heavn/.gemini/config/skills/create/scripts/await-event.py <state_dir>/events 300`
+     `python3 /Users/heavn/.claude/skills/create/scripts/await-event.py <state_dir>/events 300`
    - Stop calling tools and go idle.
    - When woken up by the watcher completion message, read `<state_dir>/events`:
      - If the last event logged is `{"action":"deploy"}`:
@@ -267,4 +267,4 @@ When generating any digital product (especially if the user aims to sell it):
 - **Not starting the await-event.py script**: If you don't start the background event watcher, you will go idle and the wizard in the browser won't progress when the user submits their choices.
 - **Forgetting to delete prior step file**: Keep `<screen_dir>` clean by deleting the previous step's HTML file so the server immediately serves the newest file and avoids confusion.
 - **Including showcase in the ZIP**: Ensure `06_showcase.html` is omitted from the ZIP file so that the client only gets their clean raw assets/deliverables to sell.
-- **Skipping Visual QA Verification**: Delivering unstyled, raw Times New Roman HTML files (e.g. because CSS assets weren't written or paths were misaligned). You MUST run `capture-screen.js` to render the pages and visually verify styling via `view_file` before completing the creation.
+- **Skipping Visual QA Verification**: Delivering unstyled, raw Times New Roman HTML files (e.g. because CSS assets weren't written or paths were misaligned). You MUST run `capture-screen.js` to render the pages and visually verify styling via `Read` before completing the creation.

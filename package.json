@@ -1,12 +1,22 @@
 {
   "name": "create",
   "version": "1.0.0",
-  "description": "",
+  "description": "Synthesize production-ready digital products and environments directly from a prompt. Zero templates. Zero compromise. An Omni-Intelligence architecture powered by Ultron, Ruflo, and Stitch-kit.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "ai",
+    "claude",
+    "skill",
+    "agent",
+    "generator",
+    "design",
+    "ui",
+    "omni-intelligence",
+    "superpowers"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",

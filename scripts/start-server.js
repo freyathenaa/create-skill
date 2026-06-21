@@ -21,7 +21,7 @@ for (let i = 2; i < process.argv.length; i++) {
   }
 }
 
-const projectDir = args['project-dir'] || '/Users/heavn/.gemini/antigravity/scratch';
+const projectDir = args['project-dir'] || '/Users/heavn/.claude/scratch';
 const startPort = parseInt(args['port'] || '8888', 10);
 const openBrowser = args['open'] || false;
 
