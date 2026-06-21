@@ -3,16 +3,17 @@
 <img src="./assets/banner.png" alt="create branding banner" width="600" style="border-radius: 12px; margin-bottom: 24px;" />
 
 # create
-### **The Intelligent Design & Development Tool for Antigravity**
 
-*Synthesize production-ready digital products and environments directly from a prompt. Zero templates. Zero compromise.*
+### **Turn one prompt into a finished, ready-to-ship digital product.**
+
+*A skill that synthesizes premium landing pages, blogs, dashboards, HUDs, and more — from a short brief, with real design systems. Two editions: one for Google Antigravity, one for Claude Desktop.*
 
 <br/>
 
-[![Version](https://img.shields.io/badge/version-6.0.0-007AFF?style=for-the-badge&labelColor=0A0A0C)](https://github.com/freyathenaa/create-skill)&nbsp;
-[![Antigravity](https://img.shields.io/badge/Powered%20By-Antigravity-D97757?style=for-the-badge&labelColor=0A0A0C)](https://github.com/freyathenaa)&nbsp;
-[![Aesthetic](https://img.shields.io/badge/Aesthetics-Apple%20%2F%20Geist%20%2F%20Linear-000000?style=for-the-badge&labelColor=0A0A0C)](#design-aesthetics)&nbsp;
-[![PWA](https://img.shields.io/badge/PWA-Ready-10B981?style=for-the-badge&labelColor=0A0A0C)](#synthesis-stack)
+[![Version](https://img.shields.io/badge/version-6.0.0-007AFF?style=for-the-badge&labelColor=0A0A0C)](#)&nbsp;
+[![Antigravity](https://img.shields.io/badge/edition-Antigravity-8B5CF6?style=for-the-badge&labelColor=0A0A0C)](./README.antigravity.md)&nbsp;
+[![Claude Desktop](https://img.shields.io/badge/edition-Claude%20Desktop-D97757?style=for-the-badge&labelColor=0A0A0C)](./claude/README.md)&nbsp;
+[![Aesthetics](https://img.shields.io/badge/aesthetics-Apple%20%2F%20Geist%20%2F%20Linear%20%2F%20Stripe-000000?style=for-the-badge&labelColor=0A0A0C)](#design-aesthetics)
 
 <br/>
 
@@ -20,105 +21,106 @@
 
 </div>
 
-## What is create?
+## What is `create`?
 
-`create` is an autonomous engineering pipeline that translates a single prompt or visual briefing into high-fidelity, interactive digital products. Whether generating a minimalist SaaS dashboard, a retro blog, a holographic AI interface, or a developer IDE workspace, the agent handles the planning, coding, unit testing, visual QA, and deliverable bundling.
+`create` is an autonomous design-and-build pipeline. Give it a one-line brief — or just run `/create` and answer a short wizard — and it synthesizes a high-fidelity, interactive digital product: copy, layout, design system, and packaged source files, ready to sell or ship.
 
-It operates in two entry modes:
+It is **not** a template gallery. Every output is generated fresh against a chosen aesthetic (Apple HIG, Vercel Geist, Linear Dark, or Stripe SaaS) and a chosen positioning angle, then QA'd and delivered.
 
-*   **Inline Brief Mode**: Intercepts prompts (e.g. `/create a token management console...`), runs an interactive browser-based clarifying wizard, and synthesizes the workspace directly.
-*   **Visual Curation Wizard**: Initiated with `/create`. Boots the Visual Companion Server and guides the creator through visual styling, technology stack, and backend provisioning options.
+This repository ships **two editions of the same skill**, tuned to two different runtimes.
 
----
+## Two editions
 
-## Design Aesthetics
-
-All synthesized projects adhere to refined, modern, and industry-standard design specifications. There are no generic, unstyled browser defaults or retro themes.
-
-| Theme | Visual Language | Typography & Details |
+| | 🟣 **Antigravity edition** | 🟠 **Claude Desktop edition** |
 | :--- | :--- | :--- |
-| **🍏 Apple HIG** | Clean whites or OLED blacks, backdrop blur layers, generous whitespace. | SF Pro Display, soft translucent overlays, large rounded cards (16px–24px). |
-| **▲ Geist Minimal** | High-contrast monochrome (pure black/white), strict structural layouts. | Inter/Geist Mono, ultra-thin borders (1px), sharp elements (6px–8px radii). |
-| **🌌 Linear Dark** | Deep technical dark mode (`#0E0F11`), subtle gradient highlights, high precision. | Custom iconography, dark translucent panels, micro-shadows, violet accents. |
-| **💳 Stripe SaaS** | Sophisticated ivory or deep navy panels, large diffused drop shadows, high trust. | Refined editorial serif headings paired with clean sans-serif body text. |
+| **Lives in** | repo root — [`SKILL.md`](./SKILL.md), [`README.antigravity.md`](./README.antigravity.md) | [`claude/`](./claude/) — [`claude/SKILL.md`](./claude/SKILL.md), [`claude/README.md`](./claude/README.md) |
+| **Runtime** | Google Antigravity (agent shell **is** the user's machine) | Claude Desktop / Cowork (agent shell is a **sandbox**) |
+| **Input UI** | Browser wizard served by a local Node "Visual Companion Server" | Visual wizard via `show_widget`, falling back to `AskUserQuestion` |
+| **Showcase** | `06_showcase.html` served on `localhost` | Persisted **Cowork artifact** (`create_artifact`) |
+| **Downloads** | `/api/download` endpoint | `present_files` cards |
+| **Planning** | Superpowers skills | Native task list + Agent/Task tool |
+| **Visual QA** | Puppeteer vs `localhost` | Puppeteer vs `file://` — **best-effort**, auto code-review fallback |
+| **Install to** | `~/.gemini/config/skills/create/` | `~/.claude/skills/create/` |
 
----
+Why two? The Antigravity edition assumes the agent's shell is the user's own computer, so it can run a web server on `localhost` and open the user's browser. In Claude Desktop the shell is an isolated sandbox — a server there is unreachable and there's no display — so that edition swaps the whole mechanism for Cowork-native primitives (`AskUserQuestion`, `show_widget`, the task list, `create_artifact`, `present_files`). Full comparison and a one-command split recipe live in [`VARIANTS.md`](./VARIANTS.md).
 
-## Architecture & Workflow
+## Quick start
 
-`create` behaves like a complete engineering team using a strict state machine:
+**Claude Desktop**
+```bash
+cp -R claude ~/.claude/skills/create
+cd ~/.claude/skills/create && npm install   # optional: Chromium for visual QA
+```
+Then run `/create` (or just ask Claude to "create" something). Pick options in the visual wizard and hit **Generate**.
+
+**Antigravity**
+```bash
+cp -R . ~/.gemini/config/skills/create   # excludes nothing functional; see README.antigravity.md
+```
+Then run `/create`. See [`README.antigravity.md`](./README.antigravity.md) for the original docs.
+
+## How it works (Claude Desktop edition)
 
 ```mermaid
 flowchart TD
-    A(["/create &lt;prompt&gt;"]) -->|Inline Brief| B[Parse brief & prompt questions]
-    A2(["/create"]) -->|Wizard invoke| C[Start Visual Companion Server]
-
-    B --> D[Open Inline Wizard & Gather Answers]
-    C --> E[Open Visual Dashboard in Browser]
-
-    D --> F[Synthesize Config Bundle]
-    E --> F
-
-    F --> G[Multi-Agent Planning & Subagent Dispatching]
-    G --> H[Code Synthesis & Atomic File Writing]
-    H --> I[Automated Testing & Systematic Debugging]
-    I --> J[Visual QA: Puppeteer Screenshot Checks]
-    J --> K[Asset Packaging & project_assets.zip Creation]
-    K --> L([Showcase Interface & Download Dashboard])
+    A(["/create"]) --> B[Visual wizard via show_widget]
+    A2(["/create &lt;brief&gt;"]) --> C[Parse brief + targeted questions]
+    B --> F[Build config]
+    C --> F
+    F --> G[Plan with task list / Agent tool]
+    G --> H[Synthesize copy, layout & design system]
+    H --> I[Package project_assets.zip]
+    I --> J[Visual QA — best-effort, code-review fallback]
+    J --> K([create_artifact showcase + present_files])
 
     style A fill:#007AFF,color:#fff,stroke:none
     style A2 fill:#8B5CF6,color:#fff,stroke:none
-    style L fill:#10B981,color:#fff,stroke:none
+    style K fill:#10B981,color:#fff,stroke:none
     style G fill:#1e1f2e,color:#fff,stroke:#007AFF
 ```
 
----
+The wizard's **Generate** button submits your choices straight back to Claude — no localhost, no polling. The result is delivered as an interactive showcase artifact plus downloadable source files.
 
-## Product Blueprints
+## What it can make
 
-The synthesizer supports the execution of several production-ready product classes:
+`blog` · `saas` landing · `course` · `ebook` · `chrome-extension` · `data-app` · `dashboard` · `game` · `planner` · `wellness` · `jarvis` HUD · agent `ide`
 
-*   **`saas` / Web App**: Full-stack application frameworks, authentication wrappers, API routing setups, and Stripe billing integrations.
-*   **`dashboard`**: Responsive metrics grids, data graphing telemetry, and telemetry dashboards.
-*   **`ide` / Developer Workspace**: Interactive multi-agent IDE dashboards featuring Kanban task boards and simulated typing/editing panels.
-*   **`jarvis`**: Voice-activated Agentic Workspace panels with camera gesture tracking, audio synths, and command terminals.
-*   **`data-app`**: Telemetry dashboards and data visualizations powered by BigQuery or external endpoints.
-*   **`chrome-extension`**: Manifest V3 Chrome extensions pre-packaged for Web Store distribution.
-*   **`blog` / Indie Webspace**: Dual-column minimalist sites with custom guestbooks, shoutboxes, and reading layout presets.
-*   **`course` & `ebook`**: Multi-module curriculum templates, worksheets, chapters, and audience lead magnets.
+<a id="design-aesthetics"></a>
+## Design aesthetics
 
----
+Refined, modern, industry-standard specs only — no unstyled defaults.
 
-## Synthesis Stack
+| Theme | Visual language |
+| :--- | :--- |
+| 🍏 **Apple HIG** | Clean whites / OLED black, glassmorphism, generous whitespace, SF Pro |
+| ▲ **Vercel Geist** | High-contrast monochrome, thin borders, hyper-minimal grid, Inter/Geist |
+| 🌌 **Linear Dark** | Deep `#0E0F11`, radial lighting, translucent cards, violet accents |
+| 💳 **Stripe SaaS** | Ivory / navy, soft diffused shadows, editorial serif + clean sans |
 
-| Layer | Technologies | Role |
-| :--- | :--- | :--- |
-| **Orchestration** | Antigravity Agent SDK | Execution flow, planning, and task coordination |
-| **Frameworks** | React (Vite) / Next.js / Vanilla HTML | Scaffolds application layers based on configuration |
-| **Database/Auth** | Firebase (Firestore + Auth) | Provisioned backend and security rules |
-| **Automation** | Express.js + Python | Interactive server hosting and event synchronization |
-| **Visual Validation** | Puppeteer | Headless capture and automatic path verification |
+## Repository structure
 
----
+```
+create-skill/
+├── README.md                 # this landing page
+├── README.antigravity.md     # the original Antigravity edition docs (preserved)
+├── VARIANTS.md               # both editions compared + how to split them
+├── SKILL.md                  # Antigravity edition skill
+├── scripts/ · templates/     # Antigravity edition assets
+├── assets/                   # banner
+└── claude/                   # Claude Desktop edition (self-contained)
+    ├── SKILL.md · README.md · package.json
+    ├── scripts/capture-screen.js
+    └── templates/            # wizard-widget, jarvis, ide, retro
+```
 
-## Getting Started
+## Pushing / GitHub auth
 
-1. **Installation**:
-   ```bash
-   git clone git@github.com:freyathenaa/create-skill.git
-   cd create-skill
-   npm install
-   ```
-
-2. **Integration**:
-   Move the folder into your Antigravity skills path (`~/.gemini/config/skills/create/`). The slash command `/create` will instantly register.
+This is a normal git repo (`origin` points at SSH). To push your commits, set up SSH or the GitHub CLI on your own machine, then `git push -u origin main`. The short version: `brew install gh && gh auth login`, or generate an SSH key (`ssh-keygen -t ed25519`) and add it under GitHub → Settings → SSH keys.
 
 ---
 
 <div align="center">
 
 *Built for creators who ship.*
-
-[![Github](https://img.shields.io/badge/github-freyathenaa-007AFF?style=flat-square&logo=github&labelColor=0A0A0C)](https://github.com/freyathenaa)
 
 </div>
